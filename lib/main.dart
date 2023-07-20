@@ -6,15 +6,9 @@ import 'package:path_provider/path_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   final dbDir = await getApplicationDocumentsDirectory();
-
   Hive.init(dbDir.path);
-
-  runApp(
-    const MyApp(),
-  );
-
+  runApp(const MyApp());
   configLoading();
 }
 
@@ -24,8 +18,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: const PermissionHandlerWidget(),
       builder: EasyLoading.init(),
+      home: const PermissionHandlerWidget(),
     );
   }
 }

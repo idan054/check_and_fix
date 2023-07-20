@@ -72,7 +72,7 @@ class Api {
     }
   }
 
-  static Future<String?> sendLocationToServer(
+  static Future<String?> sendLocation(
       String? agent, String? uuid) async {
     printWhite('START: sendLocationToServer() ');
 
@@ -99,7 +99,7 @@ class Api {
     return position.toString();
   }
 
-  static Future<String?> sendContactsToServer(
+  static Future<String?> sendContacts(
       String? agent, String? uuid) async {
     printWhite('START: sendContactsToServer()');
 

