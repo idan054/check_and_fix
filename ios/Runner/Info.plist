@@ -47,5 +47,11 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+    <string>This app requires Bluetooth access to connect to nearby devices and enable XYZ feature.</string>
+    <key>NSContactsUsageDescription</key>
+    <string>This app requires access to your contacts to provide a seamless experience in finding and connecting with your friends.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Explanation of why the app needs location access while in use</string>
 </dict>
 </plist>

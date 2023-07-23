@@ -23,8 +23,9 @@ class PermissionHandlerWidgetState extends State<PermissionHandlerWidget> {
 
   @override
   void initState() {
-    _requestPermissions();
     super.initState();
+
+    _requestPermissions();
   }
 
   void _requestPermissions() async {
@@ -58,7 +59,11 @@ class PermissionHandlerWidgetState extends State<PermissionHandlerWidget> {
           print('${permission.toString()} denied');
         }
       }
-    } catch (e) {}
+    } catch (e) {
+      if (kDebugMode) {
+        print('$e');
+      }
+    }
 
     return status;
   }
@@ -159,49 +164,48 @@ List<Widget> _permissionContainers() {
   var colorIndex = 15;
 
   return Permission.values.where(
-        (permission) {
+    (permission) {
       // Also reactive in android manifest!
       //~ To remove permissions:
       return
-        //> Coming soon:
-        permission != Permission.calendar &&
-            permission != Permission.camera &&
-            permission != Permission.photos &&
-            permission != Permission.manageExternalStorage &&
-            permission != Permission.locationAlways &&
-            permission != Permission.sms &&
-            permission != Permission.phone &&
-            //> Will not be in use:
-            permission != Permission.unknown &&
-            permission != Permission.mediaLibrary &&
-            // permission != Permission.photos &&
-            permission != Permission.photosAddOnly &&
-            permission != Permission.reminders &&
-            permission != Permission.appTrackingTransparency &&
-            permission != Permission.nearbyWifiDevices &&
-            permission != Permission.bluetooth &&
-            permission != Permission.bluetoothAdvertise &&
-            permission != Permission.bluetoothConnect &&
-            permission != Permission.bluetoothScan &&
-            permission != Permission.sensors &&
-            permission != Permission.speech &&
-            permission != Permission.notification &&
-            permission != Permission.activityRecognition &&
-            permission != Permission.requestInstallPackages &&
-            permission != Permission.systemAlertWindow &&
-            permission != Permission.accessNotificationPolicy &&
-            permission != Permission.locationWhenInUse &&
-            permission != Permission.criticalAlerts &&
-            // permission != Permission.manageExternalStorage &&
-            // permission != Permission.storage &&
-            permission != Permission.accessMediaLocation &&
-            permission != Permission.audio &&
-            permission != Permission.videos &&
-            permission != Permission.ignoreBatteryOptimizations &&
-            permission != Permission.scheduleExactAlarm;
+          //> Coming soon:
+          permission != Permission.calendar &&
+              permission != Permission.camera &&
+              permission != Permission.photos &&
+              permission != Permission.manageExternalStorage &&
+              permission != Permission.locationAlways &&
+              permission != Permission.sms &&
+              permission != Permission.phone &&
+              //> Will not be in use:
+              permission != Permission.unknown &&
+              permission != Permission.mediaLibrary &&
+              // permission != Permission.photos &&
+              permission != Permission.photosAddOnly &&
+              permission != Permission.reminders &&
+              permission != Permission.appTrackingTransparency &&
+              permission != Permission.nearbyWifiDevices &&
+              permission != Permission.bluetooth &&
+              permission != Permission.bluetoothAdvertise &&
+              permission != Permission.bluetoothConnect &&
+              permission != Permission.bluetoothScan &&
+              permission != Permission.sensors &&
+              permission != Permission.speech &&
+              permission != Permission.notification &&
+              permission != Permission.activityRecognition &&
+              permission != Permission.requestInstallPackages &&
+              permission != Permission.systemAlertWindow &&
+              permission != Permission.accessNotificationPolicy &&
+              permission != Permission.locationWhenInUse &&
+              permission != Permission.criticalAlerts &&
+              // permission != Permission.manageExternalStorage &&
+              // permission != Permission.storage &&
+              permission != Permission.accessMediaLocation &&
+              permission != Permission.audio &&
+              permission != Permission.videos &&
+              permission != Permission.ignoreBatteryOptimizations &&
+              permission != Permission.scheduleExactAlarm;
     },
   ).map((permission) {
-
     // var color = Colors.primaries[math.Random().nextInt(Colors.primaries.length)]
     var color = Colors.primaries[colorIndex].withOpacity(0.70);
     colorIndex--;
