@@ -1,6 +1,7 @@
-import 'package:check_and_fix/presentation/widgets/permission_handler_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:check_and_fix/presentation/pages/page_main/page_main.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -8,7 +9,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final dbDir = await getApplicationDocumentsDirectory();
   Hive.init(dbDir.path);
-  runApp(const MyApp());
+  runApp(
+    const ProviderScope(
+      child: MyApp(),
+    ),
+  );
   configLoading();
 }
 
@@ -18,8 +23,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       builder: EasyLoading.init(),
-      home: const PermissionHandlerWidget(),
+      home: const PageMain(),
     );
   }
 }

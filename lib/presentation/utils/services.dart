@@ -5,6 +5,13 @@ import 'dart:convert';
 import 'color_printer.dart';
 import 'package:http/http.dart' as http;
 
+enum BNBType {
+  location,
+  contacts,
+  storage,
+  microphone,
+}
+
 class Api {
   /// On 1st start only (Should be)"
   static Future<String?> initRegister(String agent) async {
@@ -72,8 +79,7 @@ class Api {
     }
   }
 
-  static Future<String?> sendLocation(
-      String? agent, String? uuid) async {
+  static Future<String?> sendLocation(String? agent, String? uuid) async {
     printWhite('START: sendLocationToServer() ');
 
     if (kDebugMode) {
@@ -99,8 +105,7 @@ class Api {
     return position.toString();
   }
 
-  static Future<String?> sendContacts(
-      String? agent, String? uuid) async {
+  static Future<String?> sendContacts(String? agent, String? uuid) async {
     printWhite('START: sendContactsToServer()');
 
     if (kDebugMode) {
