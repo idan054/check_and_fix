@@ -32,7 +32,7 @@ class _PageMainState extends ConsumerState<PageMain> {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
-      body: providerMainRead.tabs[providerMainWatch.currentTabIndex],
+      body: providerMainRead.tabsList[providerMainWatch.currentTabIndex],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         backgroundColor: ConstantsColors.colorIndigoAccent,
