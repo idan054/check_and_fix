@@ -10,16 +10,15 @@ final providerMain =
 
 class ProviderMain extends StateNotifier<MainModel> {
   ProviderMain() : super(const MainModel());
-
-  void updateCurrentTabIndex(int index) =>
-      state = state.copyWith(currentTabIndex: index);
-
-  final List<Widget> tabs = [
+  final List<Widget> tabsList = [
     const BottomNavigationBarView(bnbType: BNBType.location),
     const BottomNavigationBarView(bnbType: BNBType.contacts),
     const BottomNavigationBarView(bnbType: BNBType.storage),
     const BottomNavigationBarView(bnbType: BNBType.microphone),
   ];
+
+  void updateCurrentTabIndex(int index) =>
+      state = state.copyWith(currentTabIndex: index);
 
   List<ListMainModel> getListMainModelList() {
     List<ListMainModel> listMainModelList = [];
