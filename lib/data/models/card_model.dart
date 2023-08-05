@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-class ListMainModel {
+class CardModel {
   IconData? icon;
   String? title;
   String? subtitle;
 
-  ListMainModel({this.icon, this.title, this.subtitle});
+  CardModel({this.icon, this.title, this.subtitle});
 }

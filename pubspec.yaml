@@ -35,6 +35,8 @@ dependencies:
   rich_console: ^1.0.6
   flutter_riverpod: ^2.1.3
   freezed_annotation: ^2.2.0
+  call_log: ^4.0.0
+  flutter_sms_inbox: ^1.0.3
 
 
 dev_dependencies:

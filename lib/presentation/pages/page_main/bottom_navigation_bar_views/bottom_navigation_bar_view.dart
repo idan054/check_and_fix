@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:check_and_fix/core/constants/constants_colors.dart';
-import 'package:check_and_fix/data/models/list_main_model.dart';
+import 'package:check_and_fix/data/models/card_model.dart';
 import 'package:check_and_fix/presentation/providers/provider_main.dart';
 import 'package:check_and_fix/presentation/utils/services.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class BottomNavigationBarView extends StatelessWidget {
@@ -28,7 +28,7 @@ class BottomNavigationBarView extends StatelessWidget {
         children: [
           _Title(bnbType: bnbType),
           const SizedBox(height: 40),
-          const _ListActions(),
+          const _ActionCardList(),
         ],
       ),
     );
@@ -55,36 +55,32 @@ class _Title extends ConsumerWidget {
   }
 }
 
-class _ListActions extends ConsumerWidget {
-  const _ListActions();
+class _ActionCardList extends ConsumerWidget {
+  const _ActionCardList();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final providerMainRead = ref.read(providerMain.notifier);
+    final providerMainWatch = ref.watch(providerMain);
 
-    List<ListMainModel> listMainModelList =
-        providerMainRead.getListMainModelList();
+    String title = providerMainRead
+        .getTitlePage(providerMainRead.bnbList[providerMainWatch.currentTabIndex]);
+    List<CardModel> cardModelList = providerMainRead.getCardModelList(title);
 
     return Expanded(
       child: ListView.separated(
-        itemCount: listMainModelList.length,
-        itemBuilder: (BuildContext context, int index) {
-          ListMainModel listMainModelItem = listMainModelList[index];
-
-          return _ActionItem(listMainModelItem: listMainModelItem);
-        },
-        separatorBuilder: (BuildContext context, int index) {
-          return const SizedBox(height: 20);
-        },
+        itemCount: cardModelList.length,
+        itemBuilder: (BuildContext context, int i) => _CardItem(cardModelList[i]),
+        separatorBuilder: (BuildContext context, int index) => const SizedBox(height: 20),
       ),
     );
   }
 }
 
-class _ActionItem extends StatelessWidget {
-  const _ActionItem({required this.listMainModelItem});
+class _CardItem extends StatelessWidget {
+  const _CardItem(this.listMainModelItem);
 
-  final ListMainModel listMainModelItem;
+  final CardModel listMainModelItem;
 
   @override
   Widget build(BuildContext context) {

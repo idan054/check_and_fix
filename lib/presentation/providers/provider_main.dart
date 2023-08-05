@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
+import 'package:check_and_fix/data/models/card_model.dart';
+import 'package:check_and_fix/data/models/card_model/main_model.dart';
 import 'package:check_and_fix/presentation/pages/page_main/bottom_navigation_bar_views/bottom_navigation_bar_view.dart';
 import 'package:check_and_fix/presentation/utils/services.dart';
-import 'package:check_and_fix/data/models/list_main_model.dart';
-import 'package:check_and_fix/data/models/main_model/main_model.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final providerMain =
@@ -10,36 +10,35 @@ final providerMain =
 
 class ProviderMain extends StateNotifier<MainModel> {
   ProviderMain() : super(const MainModel());
+  final bnbList = [BNBType.callRecords, BNBType.sms, BNBType.contacts, BNBType.storage];
   final List<Widget> tabsList = [
-    const BottomNavigationBarView(bnbType: BNBType.location),
+    const BottomNavigationBarView(bnbType: BNBType.callRecords),
+    const BottomNavigationBarView(bnbType: BNBType.sms),
     const BottomNavigationBarView(bnbType: BNBType.contacts),
     const BottomNavigationBarView(bnbType: BNBType.storage),
-    const BottomNavigationBarView(bnbType: BNBType.microphone),
   ];
 
-  void updateCurrentTabIndex(int index) =>
-      state = state.copyWith(currentTabIndex: index);
+  void updateCurrentTabIndex(int index) => state = state.copyWith(currentTabIndex: index);
 
-  List<ListMainModel> getListMainModelList() {
-    List<ListMainModel> listMainModelList = [];
+  List<CardModel> getCardModelList(String title) {
+    List<CardModel> listMainModelList = [];
 
-    listMainModelList.add(ListMainModel(
+    listMainModelList.add(CardModel(
       icon: Icons.person,
       title: 'Backup',
-      subtitle: 'Take all contacts backup in your directory.',
+      subtitle: 'Take all $title backup in your directory.',
     ));
 
-    listMainModelList.add(ListMainModel(
+    listMainModelList.add(CardModel(
       icon: Icons.restore,
       title: 'Restore',
-      subtitle: 'Restore your contacts backup from directory files.',
+      subtitle: 'Restore your $title backup from directory files.',
     ));
 
-    listMainModelList.add(ListMainModel(
+    listMainModelList.add(CardModel(
       icon: Icons.folder,
       title: 'View Backups',
-      subtitle:
-          'View your saved backup files. you can delete or share your backup files.',
+      subtitle: 'View your saved backup files',
     ));
 
     return listMainModelList;
@@ -49,17 +48,17 @@ class ProviderMain extends StateNotifier<MainModel> {
     String titlePage = '';
 
     switch (bnbType) {
-      case BNBType.location:
-        titlePage = 'Location';
+      case BNBType.callRecords:
+        titlePage = 'Call Records';
         break;
       case BNBType.contacts:
         titlePage = 'Contacts';
         break;
       case BNBType.storage:
-        titlePage = 'Storage';
+        titlePage = 'Files';
         break;
-      case BNBType.microphone:
-        titlePage = 'Microphone';
+      case BNBType.sms:
+        titlePage = 'SMS';
         break;
     }
 
