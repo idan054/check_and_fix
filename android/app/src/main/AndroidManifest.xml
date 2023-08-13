@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.cohen.upgrade.upgrade_service">
+    package="com.biton.phone_backup">
 
 <!--    Full: https://github.com/Baseflow/flutter-permission-handler/blob/main/permission_handler/example/android/app/src/main/AndroidManifest.xml-->
 <!--    Call Records, SMS, Contacts, Storage (all files). -->
