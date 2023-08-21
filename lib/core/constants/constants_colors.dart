@@ -6,4 +6,13 @@ class ConstantsColors {
   static const colorIndigo = Colors.indigo;
   static const colorIndigoAccent = Colors.indigoAccent;
   static const colorBlueGrey = Colors.blueGrey;
+  static const colorBlack54 = Colors.black54;
+}
+
+class CommonStyles {
+  static const titleStyle = TextStyle(
+    fontSize: 18.0,
+    color: ConstantsColors.colorBlack54,
+    fontWeight: FontWeight.bold,
+  );
 }

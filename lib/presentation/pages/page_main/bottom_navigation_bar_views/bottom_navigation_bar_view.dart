@@ -2,6 +2,7 @@ import 'package:check_and_fix/core/constants/constants_colors.dart';
 import 'package:check_and_fix/data/models/card_model.dart';
 import 'package:check_and_fix/presentation/providers/provider_main.dart';
 import 'package:check_and_fix/presentation/utils/services.dart';
+import 'package:check_and_fix/presentation/widgets/common_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -63,51 +64,71 @@ class _ActionCardList extends ConsumerWidget {
     final providerMainRead = ref.read(providerMain.notifier);
     final providerMainWatch = ref.watch(providerMain);
 
-    String title = providerMainRead
-        .getTitlePage(providerMainRead.bnbList[providerMainWatch.currentTabIndex]);
+    String title = providerMainRead.getTitlePage(
+        providerMainRead.bnbList[providerMainWatch.currentTabIndex]);
     List<CardModel> cardModelList = providerMainRead.getCardModelList(title);
 
     return Expanded(
       child: ListView.separated(
         itemCount: cardModelList.length,
-        itemBuilder: (BuildContext context, int i) => _CardItem(cardModelList[i]),
-        separatorBuilder: (BuildContext context, int index) => const SizedBox(height: 20),
+        itemBuilder: (BuildContext context, int i) =>
+            _CardItem(cardModelList[i], title),
+        separatorBuilder: (BuildContext context, int index) =>
+            const SizedBox(height: 20),
       ),
     );
   }
 }
 
 class _CardItem extends StatelessWidget {
-  const _CardItem(this.listMainModelItem);
+  const _CardItem(this.listMainModelItem, this.mainTitle);
 
   final CardModel listMainModelItem;
+  final String mainTitle;
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: ListTile(
-          leading: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(30)),
-              color: ConstantsColors.colorIndigo,
+    return GestureDetector(
+      onTap: () {
+        if (listMainModelItem.title == 'Backup') {
+          showModalBottomSheet(
+            context: context,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(26.0),
+                topRight: Radius.circular(26.0),
+              ),
             ),
-            child: Icon(
-              listMainModelItem.icon,
-              color: ConstantsColors.colorWhite,
+            builder: (BuildContext context) =>
+                CustomBottomSheet(title: mainTitle),
+          );
+        }
+      },
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: ListTile(
+            leading: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: const BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(30)),
+                color: ConstantsColors.colorIndigo,
+              ),
+              child: Icon(
+                listMainModelItem.icon,
+                color: ConstantsColors.colorWhite,
+              ),
             ),
-          ),
-          title: Text(
-            listMainModelItem.title!,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          subtitle: Padding(
-            padding: const EdgeInsets.only(top: 4),
-            child: Text(
-              listMainModelItem.subtitle!,
-              style: const TextStyle(fontSize: 13),
+            title: Text(
+              listMainModelItem.title!,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            subtitle: Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Text(
+                listMainModelItem.subtitle!,
+                style: const TextStyle(fontSize: 13),
+              ),
             ),
           ),
         ),
