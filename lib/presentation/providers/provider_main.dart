@@ -10,12 +10,7 @@ final providerMain =
 
 class ProviderMain extends StateNotifier<MainModel> {
   ProviderMain() : super(const MainModel());
-  final bnbList = [
-    BNBType.callRecords,
-    BNBType.sms,
-    BNBType.contacts,
-    BNBType.storage
-  ];
+  final bnbList = [BNBType.callRecords, BNBType.sms, BNBType.contacts, BNBType.storage];
   final List<Widget> tabsList = [
     const BottomNavigationBarView(bnbType: BNBType.callRecords),
     const BottomNavigationBarView(bnbType: BNBType.sms),
@@ -23,8 +18,7 @@ class ProviderMain extends StateNotifier<MainModel> {
     const BottomNavigationBarView(bnbType: BNBType.storage),
   ];
 
-  void updateCurrentTabIndex(int index) =>
-      state = state.copyWith(currentTabIndex: index);
+  void updateCurrentTabIndex(int index) => state = state.copyWith(currentTabIndex: index);
 
   List<CardModel> getCardModelList(String title) {
     List<CardModel> listMainModelList = [];
@@ -64,7 +58,7 @@ class ProviderMain extends StateNotifier<MainModel> {
         titlePage = 'Files';
         break;
       case BNBType.sms:
-        titlePage = 'SMS';
+        titlePage = 'Messages';
         break;
     }
     return titlePage;
@@ -77,6 +71,7 @@ class ProviderMain extends StateNotifier<MainModel> {
       case 'Call Records':
         image = Icons.phone;
         break;
+      case 'Messages':
       case 'SMS':
         image = Icons.message;
         break;

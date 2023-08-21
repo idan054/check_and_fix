@@ -11,7 +11,7 @@ class ConstantsColors {
 
 class CommonStyles {
   static const titleStyle = TextStyle(
-    fontSize: 18.0,
+    fontSize: 16.5,
     color: ConstantsColors.colorBlack54,
     fontWeight: FontWeight.bold,
   );

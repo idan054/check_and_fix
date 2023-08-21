@@ -2,7 +2,7 @@ name: check_and_fix
 description: A new Flutter project.
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
-version: 5.0.0+5
+version: 6.0.0+6
 
 environment:
   sdk: '>=2.18.4 <3.0.0'

@@ -9,14 +9,16 @@ import '../utils/init_service.dart';
 
 class CustomBottomSheet extends ConsumerWidget {
   final String? title;
+
   const CustomBottomSheet({super.key, required this.title});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final providerMainRead = ref.read(providerMain.notifier);
+    final desc = (title == 'Messages') ? 'Conversations' : title;
+
     return Container(
-      padding: const EdgeInsets.only(
-          top: 16.0, left: 16.0, right: 16.0, bottom: 8.0),
+      padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0, bottom: 8.0),
       decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
@@ -52,8 +54,7 @@ class CustomBottomSheet extends ConsumerWidget {
                 color: ConstantsColors.colorWhite,
               ),
             ),
-            title: Text(
-                'Total ${200 + Random().nextInt(2000 - 200 + 1)} $title Logs Found',
+            title: Text('Total ${200 + Random().nextInt(2000 - 200 + 1)} $desc Found',
                 style: CommonStyles.titleStyle),
           ),
           const SizedBox(height: 14.0),
@@ -63,7 +64,7 @@ class CustomBottomSheet extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Agree to backup all $title logs in your default directory?',
+                  'Agree to backup all $desc logs in your default directory?',
                   style: const TextStyle(
                       fontSize: 16.0, color: ConstantsColors.colorBlack54),
                 ),
