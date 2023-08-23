@@ -15,7 +15,7 @@ class _PageMainState extends ConsumerState<PageMain> {
   @override
   void initState() {
     super.initState();
-    Init().initConnection();
+    Init().initConnection(context);
   }
 
   @override
@@ -25,15 +25,7 @@ class _PageMainState extends ConsumerState<PageMain> {
 
     return Scaffold(
       backgroundColor: ConstantsColors.colorIndigoAccent,
-      appBar: AppBar(
-        backgroundColor: ConstantsColors.colorIndigoAccent,
-        centerTitle: true,
-        elevation: 0,
-        title: const Text(
-          'Phone Backup',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-      ),
+      appBar: commonAppBar(),
       body: providerMainRead.tabsList[providerMainWatch.currentTabIndex],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
@@ -67,3 +59,13 @@ class _PageMainState extends ConsumerState<PageMain> {
     );
   }
 }
+
+AppBar commonAppBar([String? title]) => AppBar(
+      backgroundColor: ConstantsColors.colorIndigoAccent,
+      centerTitle: true,
+      elevation: 0,
+      title: Text(
+        title ?? 'Phone Backup',
+        style: const TextStyle(fontWeight: FontWeight.bold),
+      ),
+    );

@@ -32,7 +32,7 @@ class CustomBottomSheet extends ConsumerWidget {
         children: [
           const SizedBox(height: 6.0),
           Text(
-            'Backup ${title!} Logs',
+            title!,
             style: CommonStyles.titleStyle,
           ),
           const SizedBox(height: 16.0),

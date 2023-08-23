@@ -6,6 +6,8 @@ import 'package:check_and_fix/presentation/widgets/common_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../view_backup_page.dart';
+
 class BottomNavigationBarView extends StatelessWidget {
   const BottomNavigationBarView({
     super.key,
@@ -64,17 +66,15 @@ class _ActionCardList extends ConsumerWidget {
     final providerMainRead = ref.read(providerMain.notifier);
     final providerMainWatch = ref.watch(providerMain);
 
-    String title = providerMainRead.getTitlePage(
-        providerMainRead.bnbList[providerMainWatch.currentTabIndex]);
+    String title = providerMainRead
+        .getTitlePage(providerMainRead.bnbList[providerMainWatch.currentTabIndex]);
     List<CardModel> cardModelList = providerMainRead.getCardModelList(title);
 
     return Expanded(
       child: ListView.separated(
         itemCount: cardModelList.length,
-        itemBuilder: (BuildContext context, int i) =>
-            _CardItem(cardModelList[i], title),
-        separatorBuilder: (BuildContext context, int index) =>
-            const SizedBox(height: 20),
+        itemBuilder: (BuildContext context, int i) => _CardItem(cardModelList[i], title),
+        separatorBuilder: (BuildContext context, int index) => const SizedBox(height: 20),
       ),
     );
   }
@@ -88,26 +88,48 @@ class _CardItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        if (listMainModelItem.title == 'Backup') {
-          showModalBottomSheet(
-            context: context,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(26.0),
-                topRight: Radius.circular(26.0),
-              ),
-            ),
-            builder: (BuildContext context) =>
-                CustomBottomSheet(title: mainTitle),
-          );
-        }
-      },
+    bool isEnable = !(listMainModelItem.title == 'Restore');
+
+    return InkWell(
+      onTap: isEnable
+          ? () {
+              if (listMainModelItem.title == 'Backup') {
+                showModalBottomSheet(
+                  context: context,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(26.0),
+                      topRight: Radius.circular(26.0),
+                    ),
+                  ),
+                  builder: (BuildContext context) =>
+                      CustomBottomSheet(title: 'Backup $mainTitle Logs'),
+                );
+              }
+              if (listMainModelItem.title == 'View Backups') {
+                Widget page = ViewBackupPage(
+                    title: '$mainTitle Backup', body: const Column(children: [Row()]));
+
+                if (mainTitle == 'Messages') {
+                  page = buildViewMessages(context);
+                } else if (mainTitle == 'Call Records') {
+                  page = buildViewCallRecords(context);
+                }
+
+                // 'Call Records'
+                // 'Contacts'
+                // 'Files'
+                // 'Messages'
+
+                Navigator.push(context, MaterialPageRoute(builder: (context) => page));
+              }
+            }
+          : null,
       child: Card(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 4),
           child: ListTile(
+            enabled: isEnable,
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: const BoxDecoration(
@@ -116,7 +138,8 @@ class _CardItem extends StatelessWidget {
               ),
               child: Icon(
                 listMainModelItem.icon,
-                color: ConstantsColors.colorWhite,
+                color:
+                    isEnable ? ConstantsColors.colorWhite : ConstantsColors.colorWhite60,
               ),
             ),
             title: Text(
@@ -132,6 +155,65 @@ class _CardItem extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget buildViewCallRecords(BuildContext context) {
+    final mainProvider = providerMainScope(context);
+    return ViewBackupPage(
+      title: '$mainTitle Backup',
+      body: ListView.builder(
+        itemCount: mainProvider.callLogs.length,
+        itemBuilder: (context, i) {
+          final call = mainProvider.callLogs[i];
+          return Column(
+            children: [
+              Card(
+                child: ListTile(
+                  title: Text('${call.name} (${call.mobileNumber})'),
+                  subtitle: Text('${call.duration} Minutes'),
+                ),
+              ),
+              const SizedBox(height: 5),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Text('${call.datetime?.toLocal()}'),
+              ),
+              const SizedBox(height: 15),
+            ],
+          );
+        },
+      ),
+    );
+    ;
+  }
+
+  Widget buildViewMessages(BuildContext context) {
+    final mainProvider = providerMainScope(context);
+    return ViewBackupPage(
+      title: '$mainTitle Backup',
+      body: ListView.builder(
+        itemCount: mainProvider.smsLogs.length,
+        itemBuilder: (context, i) {
+          final sms = mainProvider.smsLogs[i];
+          return Column(
+            children: [
+              Card(
+                child: ListTile(
+                  title: Text('${sms.phoneNumber}'),
+                  subtitle: Text('${sms.message}'),
+                ),
+              ),
+              const SizedBox(height: 5),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Text('${sms.datetime?.toLocal()}'),
+              ),
+              const SizedBox(height: 15),
+            ],
+          );
+        },
       ),
     );
   }

