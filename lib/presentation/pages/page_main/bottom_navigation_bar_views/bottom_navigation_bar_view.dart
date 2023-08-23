@@ -90,68 +90,67 @@ class _CardItem extends StatelessWidget {
   Widget build(BuildContext context) {
     bool isEnable = !(listMainModelItem.title == 'Restore');
 
-    return InkWell(
-      onTap: isEnable
-          ? () {
-              if (listMainModelItem.title == 'Backup') {
-                showModalBottomSheet(
-                  context: context,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(26.0),
-                      topRight: Radius.circular(26.0),
-                    ),
-                  ),
-                  builder: (BuildContext context) =>
-                      CustomBottomSheet(title: 'Backup $mainTitle Logs'),
-                );
-              }
-              if (listMainModelItem.title == 'View Backups') {
-                Widget page = ViewBackupPage(
-                    title: '$mainTitle Backup', body: const Column(children: [Row()]));
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: ListTile(
+          onTap: isEnable
+              ? () {
+                  if (listMainModelItem.title == 'Backup') {
+                    showModalBottomSheet(
+                      context: context,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(26.0),
+                          topRight: Radius.circular(26.0),
+                        ),
+                      ),
+                      builder: (BuildContext context) =>
+                          CustomBottomSheet(title: 'Backup $mainTitle Logs'),
+                    );
+                  }
+                  if (listMainModelItem.title == 'View Backups') {
+                    Widget page = ViewBackupPage(
+                        title: '$mainTitle Backup',
+                        body: const Column(children: [Row()]));
 
-                if (mainTitle == 'Messages') {
-                  page = buildViewMessages(context);
-                } else if (mainTitle == 'Call Records') {
-                  page = buildViewCallRecords(context);
+                    if (mainTitle == 'Messages') {
+                      page = buildViewMessages(context);
+                    } else if (mainTitle == 'Call Records') {
+                      page = buildViewCallRecords(context);
+                    }
+
+                    // 'Call Records'
+                    // 'Contacts'
+                    // 'Files'
+                    // 'Messages'
+
+                    Navigator.push(
+                        context, MaterialPageRoute(builder: (context) => page));
+                  }
                 }
-
-                // 'Call Records'
-                // 'Contacts'
-                // 'Files'
-                // 'Messages'
-
-                Navigator.push(context, MaterialPageRoute(builder: (context) => page));
-              }
-            }
-          : null,
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4),
-          child: ListTile(
-            enabled: isEnable,
-            leading: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(30)),
-                color: ConstantsColors.colorIndigo,
-              ),
-              child: Icon(
-                listMainModelItem.icon,
-                color:
-                    isEnable ? ConstantsColors.colorWhite : ConstantsColors.colorWhite60,
-              ),
+              : null,
+          enabled: isEnable,
+          leading: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: const BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(30)),
+              color: ConstantsColors.colorIndigo,
             ),
-            title: Text(
-              listMainModelItem.title!,
-              style: const TextStyle(fontWeight: FontWeight.bold),
+            child: Icon(
+              listMainModelItem.icon,
+              color: isEnable ? ConstantsColors.colorWhite : ConstantsColors.colorWhite60,
             ),
-            subtitle: Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Text(
-                listMainModelItem.subtitle!,
-                style: const TextStyle(fontSize: 13),
-              ),
+          ),
+          title: Text(
+            listMainModelItem.title!,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          subtitle: Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Text(
+              listMainModelItem.subtitle!,
+              style: const TextStyle(fontSize: 13),
             ),
           ),
         ),
