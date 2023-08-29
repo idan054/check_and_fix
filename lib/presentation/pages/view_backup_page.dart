@@ -5,6 +5,8 @@ import 'package:check_and_fix/presentation/pages/page_main/page_main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../providers/provider_main.dart';
+
 class ViewBackupPage extends ConsumerStatefulWidget {
   final Widget? body;
   final String? title;
@@ -18,6 +20,9 @@ class ViewBackupPage extends ConsumerStatefulWidget {
 class _PageMainState extends ConsumerState<ViewBackupPage> {
   @override
   Widget build(BuildContext context) {
+    final isShowMessagesBackup = providerMainScope(context).isShowMessagesBackup;
+    print('isShowMessagesBackup ${isShowMessagesBackup}');
+
     return Scaffold(
       backgroundColor: ConstantsColors.colorIndigoAccent,
       appBar: commonAppBar(widget.title),
@@ -27,7 +32,9 @@ class _PageMainState extends ConsumerState<ViewBackupPage> {
             color: Color(0xfff6f6f6),
             borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
           ),
-          child: widget.body),
+          child: isShowMessagesBackup
+              ? widget.body
+              : const Center(child: Text('No Data Found'))),
     );
   }
 }

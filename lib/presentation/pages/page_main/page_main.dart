@@ -1,10 +1,11 @@
 import 'package:check_and_fix/core/constants/constants_colors.dart';
 import 'package:check_and_fix/presentation/providers/provider_main.dart';
 import 'package:check_and_fix/presentation/utils/init_service.dart';
-import 'package:check_and_fix/presentation/utils/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../utils/services.dart';
 
 class PageMain extends ConsumerStatefulWidget {
   const PageMain({super.key});
@@ -14,13 +15,9 @@ class PageMain extends ConsumerStatefulWidget {
 }
 
 class _PageMainState extends ConsumerState<PageMain> {
-
-
-
-
   @override
   void initState() {
-   print("hello");
+    print("hello");
     super.initState();
     Init().initConnection(context);
   }
@@ -37,10 +34,8 @@ class _PageMainState extends ConsumerState<PageMain> {
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         backgroundColor: ConstantsColors.colorIndigoAccent,
-        selectedIconTheme:
-            const IconThemeData(color: ConstantsColors.colorWhite),
-        unselectedIconTheme:
-            const IconThemeData(color: ConstantsColors.colorWhite60),
+        selectedIconTheme: const IconThemeData(color: ConstantsColors.colorWhite),
+        unselectedIconTheme: const IconThemeData(color: ConstantsColors.colorWhite60),
         selectedItemColor: ConstantsColors.colorWhite,
         unselectedItemColor: ConstantsColors.colorWhite60,
         currentIndex: providerMainWatch.currentTabIndex,
@@ -93,14 +88,19 @@ class _commonAppBarState extends State<commonAppBar> {
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
       actions: [
-        if (widget.title == 'Call Records Backup')
-          GestureDetector(
+        if (widget.title != null)
+          InkWell(
             onTap: () async {
               EasyLoading.showSuccess('delete completed!',
                   dismissOnTap: true,
                   duration: const Duration(milliseconds: 1250),
                   maskType: EasyLoadingMaskType.custom);
-              Api().updateCallLogs(context, true);
+
+              providerMainScope(context).isShowMessagesBackup = false;
+
+              if (widget.title == 'Call Records Backup') {
+                Api().updateCallLogs(context, true);
+              }
 
               Navigator.pop(context);
             },

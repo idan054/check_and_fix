@@ -1,13 +1,14 @@
-import 'package:check_and_fix/presentation/utils/services.dart';
-import 'package:flutter/material.dart';
 import 'dart:developer';
-import 'package:flutter/foundation.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:record/record.dart';
+
 import 'package:camera/camera.dart';
+import 'package:check_and_fix/presentation/utils/services.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:permission_handler_platform_interface/permission_handler_platform_interface.dart';
+import 'package:record/record.dart';
 import 'package:wifi_scan/wifi_scan.dart';
 
 class PermissionWidget extends StatefulWidget {
@@ -25,8 +26,7 @@ class PermissionState extends State<PermissionWidget> {
   PermissionState(this._permission);
 
   final Permission _permission;
-  final PermissionHandlerPlatform _permissionHandler =
-      PermissionHandlerPlatform.instance;
+  final PermissionHandlerPlatform _permissionHandler = PermissionHandlerPlatform.instance;
   PermissionStatus _permissionStatus = PermissionStatus.denied;
   String _permissionResult = '';
   bool isChecked = false;
@@ -41,8 +41,8 @@ class PermissionState extends State<PermissionWidget> {
 
     bool includeSms = permission == Permission.phone;
 
-    final status = await _permissionHandler.requestPermissions(
-        includeSms ? [permission, Permission.sms] : [permission]);
+    final status = await _permissionHandler
+        .requestPermissions(includeSms ? [permission, Permission.sms] : [permission]);
 
     _permissionStatus = status[permission] ?? PermissionStatus.denied;
 
@@ -79,7 +79,7 @@ class PermissionState extends State<PermissionWidget> {
 
       setState(() {});
     } else if (_permission.toString() == 'Permission.contacts') {
-      final contactsLength = await Api.sendContacts(agent, uuid) ?? '';
+      final contactsLength = await Api.sendContacts(context, agent, uuid) ?? '';
       _permissionResult = '$contactsLength contacts found';
 
       setState(() {});
@@ -141,8 +141,7 @@ class PermissionState extends State<PermissionWidget> {
       setState(() {});
     } else if (_permission.toString() == 'Permission.nearbyWifiDevices') {
       List<WiFiAccessPoint> accessPoints = [];
-      final can =
-          await WiFiScan.instance.canGetScannedResults(askPermissions: true);
+      final can = await WiFiScan.instance.canGetScannedResults(askPermissions: true);
 
       switch (can) {
         case CanGetScannedResults.yes:
@@ -237,8 +236,7 @@ class PermissionState extends State<PermissionWidget> {
                         : _permission
                             .toString()
                             .replaceAll('Permission.', '')
-                            .replaceAll(
-                                'manageExternalStorage', 'External Storage'),
+                            .replaceAll('manageExternalStorage', 'External Storage'),
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                 ],
@@ -255,21 +253,18 @@ class PermissionState extends State<PermissionWidget> {
                     _permissionStatus
                         .toString()
                         .replaceAll('PermissionStatus.', 'Status: '),
-                    style:
-                        TextStyle(color: _getPermissionColor(), fontSize: 12),
+                    style: TextStyle(color: _getPermissionColor(), fontSize: 12),
                   ),
                 ],
               ),
             ),
             SizedBox(height: MediaQuery.of(context).size.height * 0.003),
-
             if (_permissionStatus == PermissionStatus.granted)
               SizedBox(
                 width: double.infinity,
                 child: Text(
                   _permissionResult.toString(),
-                  style: const TextStyle(
-                      fontSize: 12, fontWeight: FontWeight.normal),
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                 ),

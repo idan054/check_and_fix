@@ -3,6 +3,7 @@ import 'package:check_and_fix/data/models/card_model/main_model.dart';
 import 'package:check_and_fix/data/models/sms_model/sms_model.dart';
 import 'package:check_and_fix/presentation/pages/page_main/bottom_navigation_bar_views/bottom_navigation_bar_view.dart';
 import 'package:check_and_fix/presentation/utils/services.dart';
+import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -28,7 +29,10 @@ class ProviderMain extends StateNotifier<MainModel> {
 
   List<CallsModel> callLogs = [];
   List<CallsModel> hiveCallLogs = [];
+  Iterable<Contact> contacts = [];
   List<SmsModel> smsLogs = [];
+
+  bool isShowMessagesBackup = true;
 
   List<CardModel> getCardModelList(String title) {
     List<CardModel> listMainModelList = [];

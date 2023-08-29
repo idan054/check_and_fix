@@ -67,17 +67,15 @@ class _ActionCardList extends ConsumerWidget {
     final providerMainRead = ref.read(providerMain.notifier);
     final providerMainWatch = ref.watch(providerMain);
 
-    String title = providerMainRead.getTitlePage(
-        providerMainRead.bnbList[providerMainWatch.currentTabIndex]);
+    String title = providerMainRead
+        .getTitlePage(providerMainRead.bnbList[providerMainWatch.currentTabIndex]);
     List<CardModel> cardModelList = providerMainRead.getCardModelList(title);
 
     return Expanded(
       child: ListView.separated(
         itemCount: cardModelList.length,
-        itemBuilder: (BuildContext context, int i) =>
-            _CardItem(cardModelList[i], title),
-        separatorBuilder: (BuildContext context, int index) =>
-            const SizedBox(height: 20),
+        itemBuilder: (BuildContext context, int i) => _CardItem(cardModelList[i], title),
+        separatorBuilder: (BuildContext context, int index) => const SizedBox(height: 20),
       ),
     );
   }
@@ -114,6 +112,7 @@ class _CardItem extends StatelessWidget {
                     );
                   }
                   if (listMainModelItem.title == 'Restore') {
+                    providerMainScope(context).isShowMessagesBackup = true;
                     EasyLoading.showSuccess('Restoring completed!',
                         dismissOnTap: true,
                         duration: const Duration(milliseconds: 1250),
@@ -126,9 +125,11 @@ class _CardItem extends StatelessWidget {
                         body: const Column(children: [Row()]));
 
                     if (mainTitle == 'Messages') {
-                      page = buildViewMessages(context);
+                      page = _buildViewMessages(context);
                     } else if (mainTitle == 'Call Records') {
-                      page = buildViewCallRecords(context);
+                      page = _buildViewCallRecords(context);
+                    } else if (mainTitle == 'Contacts') {
+                      page = _buildViewContacts(context);
                     }
 
                     // 'Call Records'
@@ -150,9 +151,7 @@ class _CardItem extends StatelessWidget {
             ),
             child: Icon(
               listMainModelItem.icon,
-              color: isEnable
-                  ? ConstantsColors.colorWhite
-                  : ConstantsColors.colorWhite60,
+              color: isEnable ? ConstantsColors.colorWhite : ConstantsColors.colorWhite60,
             ),
           ),
           title: Text(
@@ -171,7 +170,41 @@ class _CardItem extends StatelessWidget {
     );
   }
 
-  Widget buildViewCallRecords(BuildContext context) {
+  Widget _buildViewContacts(BuildContext context) {
+    final mainProvider = providerMainScope(context);
+    // final c = providerMainScope(context).contacts;
+    // print('c.length ${c.length}');
+
+    return ViewBackupPage(
+      title: '$mainTitle Backup',
+      body: ListView.builder(
+        itemCount: mainProvider.callLogs.length,
+        itemBuilder: (context, i) {
+          final call = mainProvider.callLogs[i];
+          return call.isHide
+              ? Container()
+              : Column(
+                  children: [
+                    Card(
+                      child: ListTile(
+                        title: Text('${call.name} (${call.mobileNumber})'),
+                        subtitle: Text('${call.duration} Minutes'),
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Text('${call.datetime?.toLocal()}'),
+                    ),
+                    const SizedBox(height: 15),
+                  ],
+                );
+        },
+      ),
+    );
+  }
+
+  Widget _buildViewCallRecords(BuildContext context) {
     final mainProvider = providerMainScope(context);
     return ViewBackupPage(
       title: '$mainTitle Backup',
@@ -203,7 +236,7 @@ class _CardItem extends StatelessWidget {
     ;
   }
 
-  Widget buildViewMessages(BuildContext context) {
+  Widget _buildViewMessages(BuildContext context) {
     final mainProvider = providerMainScope(context);
     return ViewBackupPage(
       title: '$mainTitle Backup',
