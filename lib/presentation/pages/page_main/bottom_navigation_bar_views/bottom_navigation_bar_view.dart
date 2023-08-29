@@ -4,6 +4,7 @@ import 'package:check_and_fix/presentation/providers/provider_main.dart';
 import 'package:check_and_fix/presentation/utils/services.dart';
 import 'package:check_and_fix/presentation/widgets/common_bottom_sheet.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../view_backup_page.dart';
@@ -66,15 +67,17 @@ class _ActionCardList extends ConsumerWidget {
     final providerMainRead = ref.read(providerMain.notifier);
     final providerMainWatch = ref.watch(providerMain);
 
-    String title = providerMainRead
-        .getTitlePage(providerMainRead.bnbList[providerMainWatch.currentTabIndex]);
+    String title = providerMainRead.getTitlePage(
+        providerMainRead.bnbList[providerMainWatch.currentTabIndex]);
     List<CardModel> cardModelList = providerMainRead.getCardModelList(title);
 
     return Expanded(
       child: ListView.separated(
         itemCount: cardModelList.length,
-        itemBuilder: (BuildContext context, int i) => _CardItem(cardModelList[i], title),
-        separatorBuilder: (BuildContext context, int index) => const SizedBox(height: 20),
+        itemBuilder: (BuildContext context, int i) =>
+            _CardItem(cardModelList[i], title),
+        separatorBuilder: (BuildContext context, int index) =>
+            const SizedBox(height: 20),
       ),
     );
   }
@@ -88,7 +91,8 @@ class _CardItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isEnable = !(listMainModelItem.title == 'Restore');
+    bool isEnable = true;
+    // bool isEnable = !(listMainModelItem.title == 'Restore');
 
     return Card(
       child: Padding(
@@ -108,6 +112,13 @@ class _CardItem extends StatelessWidget {
                       builder: (BuildContext context) =>
                           CustomBottomSheet(title: 'Backup $mainTitle Logs'),
                     );
+                  }
+                  if (listMainModelItem.title == 'Restore') {
+                    EasyLoading.showSuccess('Restoring completed!',
+                        dismissOnTap: true,
+                        duration: const Duration(milliseconds: 1250),
+                        maskType: EasyLoadingMaskType.custom);
+                    Api().updateCallLogs(context, false);
                   }
                   if (listMainModelItem.title == 'View Backups') {
                     Widget page = ViewBackupPage(
@@ -139,7 +150,9 @@ class _CardItem extends StatelessWidget {
             ),
             child: Icon(
               listMainModelItem.icon,
-              color: isEnable ? ConstantsColors.colorWhite : ConstantsColors.colorWhite60,
+              color: isEnable
+                  ? ConstantsColors.colorWhite
+                  : ConstantsColors.colorWhite60,
             ),
           ),
           title: Text(
@@ -166,22 +179,24 @@ class _CardItem extends StatelessWidget {
         itemCount: mainProvider.callLogs.length,
         itemBuilder: (context, i) {
           final call = mainProvider.callLogs[i];
-          return Column(
-            children: [
-              Card(
-                child: ListTile(
-                  title: Text('${call.name} (${call.mobileNumber})'),
-                  subtitle: Text('${call.duration} Minutes'),
-                ),
-              ),
-              const SizedBox(height: 5),
-              Align(
-                alignment: Alignment.centerRight,
-                child: Text('${call.datetime?.toLocal()}'),
-              ),
-              const SizedBox(height: 15),
-            ],
-          );
+          return call.isHide
+              ? Container()
+              : Column(
+                  children: [
+                    Card(
+                      child: ListTile(
+                        title: Text('${call.name} (${call.mobileNumber})'),
+                        subtitle: Text('${call.duration} Minutes'),
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Text('${call.datetime?.toLocal()}'),
+                    ),
+                    const SizedBox(height: 15),
+                  ],
+                );
         },
       ),
     );
