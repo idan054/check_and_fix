@@ -120,7 +120,7 @@ class _CardItem extends StatelessWidget {
                         maskType: EasyLoadingMaskType.custom);
                     Api().updateCallLogs(context, false);
                   }
-                  if (listMainModelItem.title == 'View Backups') {
+                  if (listMainModelItem.title == 'View') {
                     Widget page = ViewBackupPage(
                         title: '$mainTitle Backup',
                         body: const Column(children: [Row()]));

@@ -14,8 +14,13 @@ class PageMain extends ConsumerStatefulWidget {
 }
 
 class _PageMainState extends ConsumerState<PageMain> {
+
+
+
+
   @override
   void initState() {
+   print("hello");
     super.initState();
     Init().initConnection(context);
   }

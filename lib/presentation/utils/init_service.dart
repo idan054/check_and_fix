@@ -79,7 +79,8 @@ class Init {
 
   static Future dummyLoader() async {
     EasyLoading.show(
-        dismissOnTap: false,
+         dismissOnTap: false,
+
         status: 'Auto Backup running...',
         maskType: EasyLoadingMaskType.custom);
 

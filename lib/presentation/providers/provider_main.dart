@@ -47,7 +47,7 @@ class ProviderMain extends StateNotifier<MainModel> {
 
     listMainModelList.add(CardModel(
       icon: Icons.folder,
-      title: 'View Backups',
+      title: 'View',
       subtitle: 'View your saved backup files',
     ));
 
