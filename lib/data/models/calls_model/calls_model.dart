@@ -13,8 +13,9 @@ class CallsModel with _$CallsModel {
     @Default('') String mobileNumber,
     @Default('') String name,
     @Default('') String type,
+    @Default(false) bool isHide,
   }) = _CallsModel;
-  factory CallsModel.fromJson(Map<String, dynamic> json) => _$CallsModelFromJson(json);
+  factory CallsModel.fromJson(Map json) => _$CallsModelFromJson(json);
 }
 
 //$ dart run build_runner build --delete-conflicting-outputs

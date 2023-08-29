@@ -9,6 +9,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final dbDir = await getApplicationDocumentsDirectory();
   Hive.init(dbDir.path);
+
   runApp(
     const ProviderScope(
       child: MyApp(),

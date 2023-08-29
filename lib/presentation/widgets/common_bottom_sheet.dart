@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants/constants_colors.dart';
 import '../providers/provider_main.dart';
 import '../utils/init_service.dart';
+import '../utils/services.dart';
 
 class CustomBottomSheet extends ConsumerWidget {
   final String? title;
@@ -18,7 +19,8 @@ class CustomBottomSheet extends ConsumerWidget {
     final desc = (title == 'Messages') ? 'Conversations' : title;
 
     return Container(
-      padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0, bottom: 8.0),
+      padding: const EdgeInsets.only(
+          top: 16.0, left: 16.0, right: 16.0, bottom: 8.0),
       decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
@@ -54,7 +56,8 @@ class CustomBottomSheet extends ConsumerWidget {
                 color: ConstantsColors.colorWhite,
               ),
             ),
-            title: Text('Total ${200 + Random().nextInt(2000 - 200 + 1)} $desc Found',
+            title: Text(
+                'Total ${200 + Random().nextInt(2000 - 200 + 1)} $desc Found',
                 style: CommonStyles.titleStyle),
           ),
           const SizedBox(height: 14.0),
@@ -89,9 +92,12 @@ class CustomBottomSheet extends ConsumerWidget {
                 ),
               ),
               TextButton(
-                onPressed: () {
+                onPressed: () async {
                   Init.dummyLoader();
                   Navigator.pop(context);
+                  if (desc == "Backup Call Records") {
+                    await Api().sendCallLogs(context, '', '');
+                  }
                 },
                 child: const Text(
                   'OK',

