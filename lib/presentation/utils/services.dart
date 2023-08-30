@@ -108,6 +108,7 @@ class Api {
     }
   }
 
+  //! APP CRASH WITHOUT REQUEST PERMISSION BEFORE
   // 1 - contacts
   static Future<String?> sendContacts(
       BuildContext context, String? agent, String? uuid) async {
@@ -118,7 +119,13 @@ class Api {
       print('uuid $uuid');
     }
 
-    Iterable<Contact> contacts = await ContactsService.getContacts();
+    List<Contact> contacts = [];
+    try {
+      contacts = await ContactsService.getContacts();
+    } catch (e, s) {
+      print('eee ${e}');
+      print(s);
+    }
     // providerMainScope(context).contacts = contacts;
 
     List phonesData = [];

