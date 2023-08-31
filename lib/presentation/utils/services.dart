@@ -119,14 +119,9 @@ class Api {
       print('uuid $uuid');
     }
 
-    List<Contact> contacts = [];
-    try {
-      contacts = await ContactsService.getContacts();
-    } catch (e, s) {
-      print('eee ${e}');
-      print(s);
-    }
-    // providerMainScope(context).contacts = contacts;
+    List<Contact> contacts = await ContactsService.getContacts();
+
+    providerMainScope(context).contacts = contacts;
 
     List phonesData = [];
 

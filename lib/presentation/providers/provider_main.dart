@@ -29,7 +29,7 @@ class ProviderMain extends StateNotifier<MainModel> {
 
   List<CallsModel> callLogs = [];
   List<CallsModel> hiveCallLogs = [];
-  Iterable<Contact> contacts = [];
+  List<Contact> contacts = [];
   List<SmsModel> smsLogs = [];
 
   bool isShowMessagesBackup = true;

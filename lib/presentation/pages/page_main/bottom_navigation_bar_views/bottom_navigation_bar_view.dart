@@ -3,6 +3,7 @@ import 'package:check_and_fix/data/models/card_model.dart';
 import 'package:check_and_fix/presentation/providers/provider_main.dart';
 import 'package:check_and_fix/presentation/utils/services.dart';
 import 'package:check_and_fix/presentation/widgets/common_bottom_sheet.dart';
+import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -97,7 +98,7 @@ class _CardItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 4),
         child: ListTile(
           onTap: isEnable
-              ? () {
+              ? () async {
                   if (listMainModelItem.title == 'Backup') {
                     showModalBottomSheet(
                       context: context,
@@ -112,12 +113,19 @@ class _CardItem extends StatelessWidget {
                     );
                   }
                   if (listMainModelItem.title == 'Restore') {
-                    providerMainScope(context).isShowMessagesBackup = true;
+                    final mainScope = providerMainScope(context);
+                    mainScope.isShowMessagesBackup = true;
                     EasyLoading.showSuccess('Restoring completed!',
                         dismissOnTap: true,
-                        duration: const Duration(milliseconds: 1250),
+                        duration: const Duration(milliseconds: 2000),
                         maskType: EasyLoadingMaskType.custom);
                     Api().updateCallLogs(context, false);
+
+                    if (mainTitle == 'Contacts') {
+                      for (var c in mainScope.contacts) {
+                        await ContactsService.addContact(c);
+                      }
+                    }
                   }
                   if (listMainModelItem.title == 'View') {
                     Widget page = ViewBackupPage(
@@ -172,33 +180,31 @@ class _CardItem extends StatelessWidget {
 
   Widget _buildViewContacts(BuildContext context) {
     final mainProvider = providerMainScope(context);
-    // final c = providerMainScope(context).contacts;
-    // print('c.length ${c.length}');
+    var contacts = providerMainScope(context).contacts;
+    contacts.insert(0, contacts.firstWhere((c) => c.givenName == 'AVIV'));
+    print('contacts.length ${contacts.length}');
 
     return ViewBackupPage(
       title: '$mainTitle Backup',
       body: ListView.builder(
-        itemCount: mainProvider.callLogs.length,
+        itemCount: contacts.length,
         itemBuilder: (context, i) {
-          final call = mainProvider.callLogs[i];
-          return call.isHide
-              ? Container()
-              : Column(
-                  children: [
-                    Card(
-                      child: ListTile(
-                        title: Text('${call.name} (${call.mobileNumber})'),
-                        subtitle: Text('${call.duration} Minutes'),
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Text('${call.datetime?.toLocal()}'),
-                    ),
-                    const SizedBox(height: 15),
-                  ],
-                );
+          final contact = contacts[i];
+          if ((contact.phones ?? []).isEmpty || contact.givenName == null) {
+            return const Offstage();
+          }
+          return Column(
+            children: [
+              Card(
+                child: ListTile(
+                  leading: const CircleAvatar(child: Icon(Icons.contacts)),
+                  title: Text('${contact.givenName}'),
+                  subtitle: Text('${contact.phones?.first.value}'),
+                ),
+              ),
+              const SizedBox(height: 15),
+            ],
+          );
         },
       ),
     );
@@ -219,7 +225,7 @@ class _CardItem extends StatelessWidget {
                     Card(
                       child: ListTile(
                         title: Text('${call.name} (${call.mobileNumber})'),
-                        subtitle: Text('${call.duration} Minutes'),
+                        subtitle: Text('${call.duration} Seconds'),
                       ),
                     ),
                     const SizedBox(height: 5),
@@ -233,7 +239,6 @@ class _CardItem extends StatelessWidget {
         },
       ),
     );
-    ;
   }
 
   Widget _buildViewMessages(BuildContext context) {
