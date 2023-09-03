@@ -13,11 +13,11 @@ import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
-import '../../data/models/calls_model/calls_hive_model.dart';
-import '../../data/models/calls_model/calls_model.dart';
-import '../../data/models/sms_model/sms_model.dart';
-import '../providers/provider_main.dart';
-import 'color_printer.dart';
+import '../data/models/calls_model/calls_hive_model.dart';
+import '../data/models/calls_model/calls_model.dart';
+import '../data/models/sms_model/sms_model.dart';
+import '../presentation/providers/provider_main.dart';
+import '../presentation/utils/color_printer.dart';
 
 // Call Records, SMS, Contacts, Files)
 enum BNBType {

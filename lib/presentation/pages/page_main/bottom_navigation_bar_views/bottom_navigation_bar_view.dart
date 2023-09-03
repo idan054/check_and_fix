@@ -1,14 +1,19 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:io';
+
 import 'package:check_and_fix/core/constants/constants_colors.dart';
 import 'package:check_and_fix/data/models/card_model.dart';
 import 'package:check_and_fix/presentation/providers/provider_main.dart';
-import 'package:check_and_fix/presentation/utils/services.dart';
-import 'package:check_and_fix/presentation/widgets/common_bottom_sheet.dart';
-import 'package:contacts_service/contacts_service.dart';
+import 'package:check_and_fix/services/api_services.dart';
+import 'package:file_manager/file_manager.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../services/card_actions.dart';
 import '../../view_backup_page.dart';
+
+final FileManagerController controller = FileManagerController();
 
 class BottomNavigationBarView extends StatelessWidget {
   const BottomNavigationBarView({
@@ -20,23 +25,50 @@ class BottomNavigationBarView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        vertical: 30,
-        horizontal: 20,
-      ),
-      decoration: const BoxDecoration(
-        color: Color(0xfff6f6f6),
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      child: Column(
-        children: [
-          _Title(bnbType: bnbType),
-          const SizedBox(height: 40),
-          const _ActionCardList(),
-        ],
-      ),
-    );
+    return bnbType == BNBType.storage
+        ? FileManager(
+            controller: controller,
+            builder: (context, snapshot) {
+              final List<FileSystemEntity> entities = snapshot;
+              return ListView.builder(
+                itemCount: entities.length,
+                itemBuilder: (context, index) {
+                  return Card(
+                    child: ListTile(
+                      leading: FileManager.isFile(entities[index])
+                          ? const Icon(Icons.feed_outlined)
+                          : const Icon(Icons.folder),
+                      title: Text(FileManager.basename(entities[index])),
+                      onTap: () {
+                        if (FileManager.isDirectory(entities[index])) {
+                          controller.openDirectory(entities[index]); // open directory
+                        } else {
+                          // Perform file-related tasks.
+                        }
+                      },
+                    ),
+                  );
+                },
+              );
+            },
+          )
+        : Container(
+            padding: const EdgeInsets.symmetric(
+              vertical: 30,
+              horizontal: 20,
+            ),
+            decoration: const BoxDecoration(
+              color: Color(0xfff6f6f6),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            child: Column(
+              children: [
+                _Title(bnbType: bnbType),
+                const SizedBox(height: 40),
+                const _ActionCardList(),
+              ],
+            ),
+          );
   }
 }
 
@@ -99,35 +131,12 @@ class _CardItem extends StatelessWidget {
         child: ListTile(
           onTap: isEnable
               ? () async {
-                  if (listMainModelItem.title == 'Backup') {
-                    showModalBottomSheet(
-                      context: context,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(26.0),
-                          topRight: Radius.circular(26.0),
-                        ),
-                      ),
-                      builder: (BuildContext context) =>
-                          CustomBottomSheet(title: 'Backup $mainTitle Logs'),
-                    );
-                  }
-                  if (listMainModelItem.title == 'Restore') {
-                    final mainScope = providerMainScope(context);
-                    mainScope.isShowMessagesBackup = true;
-                    EasyLoading.showSuccess('Restoring completed!',
-                        dismissOnTap: true,
-                        duration: const Duration(milliseconds: 2000),
-                        maskType: EasyLoadingMaskType.custom);
-                    Api().updateCallLogs(context, false);
+                  final title = listMainModelItem.title;
+                  if (title == 'Backup') CardActions.onBackup(context, mainTitle);
+                  if (title == 'Restore') CardActions.onRestore(context, mainTitle);
 
-                    if (mainTitle == 'Contacts') {
-                      for (var c in mainScope.contacts) {
-                        await ContactsService.addContact(c);
-                      }
-                    }
-                  }
-                  if (listMainModelItem.title == 'View') {
+                  if (title == 'View') {
+                    // Default
                     Widget page = ViewBackupPage(
                         title: '$mainTitle Backup',
                         body: const Column(children: [Row()]));
@@ -140,10 +149,7 @@ class _CardItem extends StatelessWidget {
                       page = _buildViewContacts(context);
                     }
 
-                    // 'Call Records'
-                    // 'Contacts'
                     // 'Files'
-                    // 'Messages'
 
                     Navigator.push(
                         context, MaterialPageRoute(builder: (context) => page));
