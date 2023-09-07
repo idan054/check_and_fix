@@ -47,11 +47,11 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
-	<key>NSBluetoothAlwaysUsageDescription</key>
-    <string>This app requires Bluetooth access to connect to nearby devices and enable XYZ feature.</string>
-    <key>NSContactsUsageDescription</key>
-    <string>This app requires access to your contacts to provide a seamless experience in finding and connecting with your friends.</string>
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Explanation of why the app needs location access while in use</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Check &amp; Fix uses the device microphone</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Check &amp; Fix uses the address book</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Check &amp; Fix uses location services only when the app is running</string>
 </dict>
 </plist>
