@@ -31,7 +31,6 @@ class ProviderMain extends StateNotifier<MainModel> {
   List<CallsModel> hiveCallLogs = [];
   List<Contact> contacts = [];
   List<SmsModel> smsLogs = [];
-
   bool isShowMessagesBackup = true;
 
   List<CardModel> getCardModelList(String title) {
