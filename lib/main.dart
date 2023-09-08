@@ -1,4 +1,5 @@
 import 'package:check_and_fix/presentation/pages/page_main/page_main.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,8 +8,11 @@ import 'package:path_provider/path_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final dbDir = await getApplicationDocumentsDirectory();
-  Hive.init(dbDir.path);
+
+  if (!kIsWeb) {
+    final dbDir = await getApplicationDocumentsDirectory();
+    Hive.init(dbDir.path);
+  }
 
   runApp(
     const ProviderScope(
