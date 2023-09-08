@@ -17,7 +17,7 @@ dependencies:
   permission_handler_platform_interface: ^3.9.0
   geolocator: ^9.0.2
   file_picker: ^5.2.11
-  flutter_blue: ^0.8.0
+#  flutter_blue: ^0.8.0 # Bluetooth
   record: ^4.4.4
   image_picker: ^0.8.7+4
   contacts_service: ^0.6.3
