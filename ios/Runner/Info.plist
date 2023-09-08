@@ -27,13 +27,11 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSContactsUsageDescription</key>
-	<string>Check and Fix uses the address book</string>
+	<string>This app wants to Check and Fix contacts</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Check and Fix uses location services only when the app is running</string>
+	<string>This app wants to Check and Fix location service</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Check and Fix uses the device microphone</string>
-	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>Check and Fix uses the device bluetooth</string>
+	<string>This app wants to Check and Fix microphone quality</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
