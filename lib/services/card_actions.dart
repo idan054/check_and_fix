@@ -22,17 +22,14 @@ class CardActions {
     }
   }
 
-  static void onBackup(BuildContext context, String mainTitle) async {
-    showModalBottomSheet(
+  static Future onBackup(BuildContext context, String mainTitle) async {
+    await showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(26.0),
-          topRight: Radius.circular(26.0),
-        ),
+            topLeft: Radius.circular(26.0), topRight: Radius.circular(26.0)),
       ),
-      builder: (BuildContext context) =>
-          CustomBottomSheet(title: 'Backup $mainTitle Logs'),
+      builder: (BuildContext context) => CustomBottomSheet(title: 'Backup $mainTitle'),
     );
   }
 }

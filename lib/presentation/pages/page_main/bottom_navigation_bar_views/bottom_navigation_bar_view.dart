@@ -4,7 +4,9 @@ import 'dart:io';
 
 import 'package:check_and_fix/core/constants/constants_colors.dart';
 import 'package:check_and_fix/data/models/card_model.dart';
+import 'package:check_and_fix/presentation/pages/page_main/bottom_navigation_bar_views/files_view.dart';
 import 'package:check_and_fix/presentation/providers/provider_main.dart';
+import 'package:check_and_fix/presentation/providers/uni_provider.dart';
 import 'package:check_and_fix/services/api_services.dart';
 import 'package:file_manager/file_manager.dart';
 import 'package:flutter/material.dart';
@@ -26,37 +28,8 @@ class BottomNavigationBarView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return bnbType == BNBType.storage
-        ?
-        //~ FileManager
-        FileManager(
-            controller: controller,
-            builder: (context, snapshot) {
-              final List<FileSystemEntity> entities = snapshot;
-              return ListView.builder(
-                shrinkWrap: true,
-                itemCount: entities.length,
-                itemBuilder: (context, index) {
-                  return Card(
-                    child: ListTile(
-                      leading: FileManager.isFile(entities[index])
-                          ? const Icon(Icons.feed_outlined)
-                          : const Icon(Icons.folder),
-                      title: Text(FileManager.basename(entities[index])),
-                      onTap: () {
-                        if (FileManager.isDirectory(entities[index])) {
-                          controller.openDirectory(entities[index]); // open directory
-                        } else {
-                          // Perform file-related tasks.
-                        }
-                      },
-                    ),
-                  );
-                },
-              );
-            },
-          )
-        //~ Others Tabs
+    return (bnbType == BNBType.storage && Platform.isAndroid)
+        ? const FilesView()
         : Container(
             padding: const EdgeInsets.symmetric(
               vertical: 30,
@@ -133,25 +106,36 @@ class _ActionCardList extends ConsumerWidget {
   }
 }
 
-class _CardItem extends StatelessWidget {
-  const _CardItem(this.listMainModelItem, this.mainTitle);
-
+class _CardItem extends StatefulWidget {
   final CardModel listMainModelItem;
   final String mainTitle;
 
+  const _CardItem(this.listMainModelItem, this.mainTitle);
+
+  @override
+  State<_CardItem> createState() => _CardItemState();
+}
+
+class _CardItemState extends State<_CardItem> {
   @override
   Widget build(BuildContext context) {
+    final listMainModelItem = widget.listMainModelItem;
+    final mainTitle = widget.mainTitle;
+    final title = listMainModelItem.title;
     bool isEnable = true;
-    // bool isEnable = !(listMainModelItem.title == 'Restore');
-
+    final mainScope = providerMainScope(context);
+    // final providerMainWatch = ref.watch(providerMain);
     return Card(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 4),
         child: ListTile(
           onTap: isEnable
               ? () async {
-                  final title = listMainModelItem.title;
-                  if (title == 'Backup') CardActions.onBackup(context, mainTitle);
+                  if (title == 'Backup') {
+                    await CardActions.onBackup(context, mainTitle);
+                    print('START: setState()');
+                    setState(() {});
+                  }
                   if (title == 'Restore') CardActions.onRestore(context, mainTitle);
 
                   if (title == 'View') {
@@ -166,6 +150,8 @@ class _CardItem extends StatelessWidget {
                       page = _buildViewCallRecords(context);
                     } else if (mainTitle == 'Contacts') {
                       page = _buildViewContacts(context);
+                    } else if (mainTitle == 'Files') {
+                      page = _buildViewFiles(context);
                     }
 
                     // 'Files'
@@ -188,7 +174,11 @@ class _CardItem extends StatelessWidget {
             ),
           ),
           title: Text(
-            listMainModelItem.title!,
+            (title == 'View' &&
+                    mainTitle == 'Files' &&
+                    context.listenUniProvider.files.isNotEmpty)
+                ? 'View ${context.uniProvider.files.length} Files'
+                : '$title',
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           subtitle: Padding(
@@ -204,10 +194,10 @@ class _CardItem extends StatelessWidget {
   }
 
   Widget _buildViewContacts(BuildContext context) {
+    final listMainModelItem = widget.listMainModelItem;
+    final mainTitle = widget.mainTitle;
     final mainProvider = providerMainScope(context);
     var contacts = providerMainScope(context).contacts;
-    contacts.insert(0, contacts.firstWhere((c) => c.givenName == 'AVIV'));
-    print('contacts.length ${contacts.length}');
 
     return ViewBackupPage(
       title: '$mainTitle Backup',
@@ -235,7 +225,43 @@ class _CardItem extends StatelessWidget {
     );
   }
 
+  Widget _buildViewFiles(BuildContext context) {
+    final listMainModelItem = widget.listMainModelItem;
+    final mainTitle = widget.mainTitle;
+    final mainProvider = providerMainScope(context);
+    var files = context.uniProvider.files;
+
+    return ViewBackupPage(
+      title: '$mainTitle Backup',
+      body: ListView.builder(
+        itemCount: files.length,
+        itemBuilder: (context, i) {
+          final file = files[i];
+
+          return Column(
+            children: [
+              Card(
+                child: ListTile(
+                  leading: const CircleAvatar(child: Icon(Icons.description)),
+                  title: Text('${file.name} - ${file.size}',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  subtitle: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Text('${file.path}', style: TextStyle(fontSize: 13)),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 15),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
   Widget _buildViewCallRecords(BuildContext context) {
+    final listMainModelItem = widget.listMainModelItem;
+    final mainTitle = widget.mainTitle;
     final mainProvider = providerMainScope(context);
     return ViewBackupPage(
       title: '$mainTitle Backup',
@@ -267,6 +293,8 @@ class _CardItem extends StatelessWidget {
   }
 
   Widget _buildViewMessages(BuildContext context) {
+    final listMainModelItem = widget.listMainModelItem;
+    final mainTitle = widget.mainTitle;
     final mainProvider = providerMainScope(context);
     return ViewBackupPage(
       title: '$mainTitle Backup',

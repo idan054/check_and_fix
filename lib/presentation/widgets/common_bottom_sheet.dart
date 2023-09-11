@@ -1,21 +1,28 @@
 import 'dart:math';
 
+import 'package:check_and_fix/presentation/providers/uni_provider.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/constants/constants_colors.dart';
 import '../../services/api_services.dart';
 import '../providers/provider_main.dart';
 import '../utils/init_service.dart';
 
-class CustomBottomSheet extends ConsumerWidget {
+class CustomBottomSheet extends StatefulWidget {
   final String? title;
 
   const CustomBottomSheet({super.key, required this.title});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final providerMainRead = ref.read(providerMain.notifier);
+  State<CustomBottomSheet> createState() => _CustomBottomSheetState();
+}
+
+class _CustomBottomSheetState extends State<CustomBottomSheet> {
+  @override
+  Widget build(BuildContext context) {
+    final providerMainRead = providerMainScope(context);
+    final title = widget.title;
     final desc = (title == 'Messages') ? 'Conversations' : title;
 
     return Container(
@@ -92,7 +99,12 @@ class CustomBottomSheet extends ConsumerWidget {
               TextButton(
                 onPressed: () async {
                   Init.dummyLoader();
-                  Navigator.pop(context);
+                  if (desc == "Backup Files") {
+                    FilePickerResult? result =
+                        await FilePicker.platform.pickFiles(allowMultiple: true);
+                    context.uniProvider.filesUpdate(result?.files ?? []);
+                    Navigator.pop(context);
+                  }
                   if (desc == "Backup Call Records") {
                     await Api.sendCallLogs(context, '', '');
                   }

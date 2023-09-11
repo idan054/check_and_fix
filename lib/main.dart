@@ -1,10 +1,12 @@
 import 'package:check_and_fix/presentation/pages/page_main/page_main.dart';
+import 'package:check_and_fix/presentation/providers/uni_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart' as p;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,8 +17,13 @@ void main() async {
   }
 
   runApp(
-    const ProviderScope(
-      child: MyApp(),
+    p.MultiProvider(
+      providers: [
+        p.ChangeNotifierProvider(create: (_) => UniProvider()),
+      ],
+      child: const ProviderScope(
+        child: MyApp(),
+      ),
     ),
   );
   configLoading();
