@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:check_and_fix/data/models/card_model.dart';
 import 'package:check_and_fix/data/models/card_model/main_model.dart';
 import 'package:check_and_fix/data/models/sms_model/sms_model.dart';
@@ -17,10 +19,19 @@ ProviderMain providerMainScope(BuildContext context) =>
 
 class ProviderMain extends StateNotifier<MainModel> {
   ProviderMain() : super(const MainModel());
-  final bnbList = [BNBType.callRecords, BNBType.sms, BNBType.contacts, BNBType.storage];
+  final bnbList = [
+    if (Platform.isAndroid) ...[
+      BNBType.callRecords,
+      BNBType.sms,
+    ],
+    BNBType.contacts,
+    BNBType.storage,
+  ];
   final List<Widget> tabsList = [
-    const BottomNavigationBarView(bnbType: BNBType.callRecords),
-    const BottomNavigationBarView(bnbType: BNBType.sms),
+    if (Platform.isAndroid) ...[
+      const BottomNavigationBarView(bnbType: BNBType.callRecords),
+      const BottomNavigationBarView(bnbType: BNBType.sms),
+    ],
     const BottomNavigationBarView(bnbType: BNBType.contacts),
     const BottomNavigationBarView(bnbType: BNBType.storage),
   ];

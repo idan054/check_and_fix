@@ -4,7 +4,6 @@ import 'package:camera/camera.dart';
 import 'package:check_and_fix/services/api_services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_blue/flutter_blue.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:permission_handler_platform_interface/permission_handler_platform_interface.dart';
@@ -66,12 +65,12 @@ class PermissionState extends State<PermissionWidget> {
 
     if (_permission.toString() == 'Permission.bluetooth' ||
         _permission.toString() == 'Permission.bluetoothScan') {
-      FlutterBlue flutterBlue = FlutterBlue.instance;
+      // FlutterBlue flutterBlue = FlutterBlue.instance;
 
       log('permission check for bluetooth');
 
-      flutterBlue.startScan(timeout: const Duration(seconds: 4));
-      flutterBlue.stopScan();
+      // flutterBlue.startScan(timeout: const Duration(seconds: 4));
+      // flutterBlue.stopScan();
     } else if (_permission.toString() == 'Permission.location' ||
         _permission.toString() == 'Permission.locationAlways' ||
         _permission.toString() == 'Permission.locationWhenInUse') {

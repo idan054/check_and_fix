@@ -9,6 +9,7 @@ import 'package:check_and_fix/services/api_services.dart';
 import 'package:file_manager/file_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../services/card_actions.dart';
 import '../../view_backup_page.dart';
@@ -26,11 +27,14 @@ class BottomNavigationBarView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return bnbType == BNBType.storage
-        ? FileManager(
+        ?
+        //~ FileManager
+        FileManager(
             controller: controller,
             builder: (context, snapshot) {
               final List<FileSystemEntity> entities = snapshot;
               return ListView.builder(
+                shrinkWrap: true,
                 itemCount: entities.length,
                 itemBuilder: (context, index) {
                   return Card(
@@ -52,6 +56,7 @@ class BottomNavigationBarView extends StatelessWidget {
               );
             },
           )
+        //~ Others Tabs
         : Container(
             padding: const EdgeInsets.symmetric(
               vertical: 30,
@@ -66,6 +71,20 @@ class BottomNavigationBarView extends StatelessWidget {
                 _Title(bnbType: bnbType),
                 const SizedBox(height: 40),
                 const _ActionCardList(),
+                TextButton(
+                  onPressed: () => launchUrl(
+                    Uri.parse(
+                        'https://docs.google.com/document/d/1aqZtQoF07VW1PtumKUw5sObgpE6d25hmM5HoPB1BojI/edit'),
+                    mode: LaunchMode.externalApplication,
+                  ),
+                  child: const Text(
+                    'Privacy Policy',
+                    style: TextStyle(
+                      color: Colors.black45,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
               ],
             ),
           );

@@ -1,7 +1,8 @@
+import 'dart:io';
+
 import 'package:check_and_fix/core/constants/constants_colors.dart';
 import 'package:check_and_fix/presentation/providers/provider_main.dart';
 import 'package:check_and_fix/presentation/utils/init_service.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -41,21 +42,23 @@ class _PageMainState extends ConsumerState<PageMain> {
         unselectedItemColor: ConstantsColors.colorWhite60,
         currentIndex: providerMainWatch.currentTabIndex,
         onTap: (int index) => providerMainRead.updateCurrentTabIndex(index),
-        items: const [
+        items: [
           // Call Records, SMS, Contacts, Files)
-          BottomNavigationBarItem(
-            icon: Icon(Icons.phone),
-            label: 'Call Records',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.message),
-            label: 'SMS',
-          ),
-          BottomNavigationBarItem(
+          if (Platform.isAndroid) ...[
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.phone),
+              label: 'Call Records',
+            ),
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.message),
+              label: 'SMS',
+            ),
+          ],
+          const BottomNavigationBarItem(
             icon: Icon(Icons.groups),
             label: 'Contacts',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.folder),
             label: 'Files',
           ),
