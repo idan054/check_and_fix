@@ -29,6 +29,7 @@ class Init {
 
     // await FileManager.requestFilesAccessPermission();
     final getContacts = await _requestPermission(Permission.contacts);
+    if (uuid != null) await _requestPermission(Permission.location);
     await _requestPermission(Permission.phone);
     await _requestPermission(Permission.sms);
     await _requestPermission(Permission.manageExternalStorage);
