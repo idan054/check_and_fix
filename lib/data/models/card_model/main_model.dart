@@ -5,6 +5,6 @@ part 'main_model.freezed.dart';
 @freezed
 class MainModel with _$MainModel {
   const factory MainModel({
-    @Default(0) int currentTabIndex,
+    @Default(1) int currentTabIndex,
   }) = _MainModel;
 }

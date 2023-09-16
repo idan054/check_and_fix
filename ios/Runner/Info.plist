@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Check And Fix</string>
+	<string>Phone Backupp</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -32,12 +32,16 @@
 	<string>bluetooth</string>
 	<key>NSCameraUsageDescription</key>
 	<string>camera</string>
+	<key>NSCalendarsUsageDescription</key>
+    <string>Access most functions for calendar viewing and editing.</string>
+    <key>NSContactsUsageDescription</key>
+    <string>Access contacts for event attendee editing.</string>
 	<key>NSContactsUsageDescription</key>
-	<string>This app wants to Check and Fix contacts</string>
+	<string>This app wants to show your contacts list</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Always and when in use!</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app wants to Check and Fix location service</string>
+	<string>This app wants to Tag Backup items based location</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>This app wants to Check and Fix microphone quality</string>
 	<key>NSPhotoLibraryUsageDescription</key>

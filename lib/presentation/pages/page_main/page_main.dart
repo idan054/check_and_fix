@@ -8,6 +8,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../services/api_services.dart';
+import 'bottom_navigation_bar_views/bottom_navigation_bar_view.dart';
 
 class PageMain extends ConsumerStatefulWidget {
   const PageMain({super.key});
@@ -28,11 +29,16 @@ class _PageMainState extends ConsumerState<PageMain> {
   Widget build(BuildContext context) {
     final providerMainWatch = ref.watch(providerMain);
     final providerMainRead = ref.read(providerMain.notifier);
+    final tabIndex = providerMainWatch.currentTabIndex;
+
+    List<Widget> tabs = providerMainRead.bnbList
+        .map((type) => BottomNavigationBarView(bnbType: type))
+        .toList();
 
     return Scaffold(
       backgroundColor: ConstantsColors.colorIndigoAccent,
       appBar: commonAppBar(),
-      body: providerMainRead.tabsList[providerMainWatch.currentTabIndex],
+      body: tabs[tabIndex],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         backgroundColor: ConstantsColors.colorIndigoAccent,
@@ -40,28 +46,19 @@ class _PageMainState extends ConsumerState<PageMain> {
         unselectedIconTheme: const IconThemeData(color: ConstantsColors.colorWhite60),
         selectedItemColor: ConstantsColors.colorWhite,
         unselectedItemColor: ConstantsColors.colorWhite60,
-        currentIndex: providerMainWatch.currentTabIndex,
+        currentIndex: tabIndex,
         onTap: (int index) => providerMainRead.updateCurrentTabIndex(index),
         items: [
           // Call Records, SMS, Contacts, Files)
           if (Platform.isAndroid) ...[
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.phone),
-              label: 'Call Records',
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.message),
-              label: 'SMS',
-            ),
+            const BottomNavigationBarItem(icon: Icon(Icons.phone), label: 'Call Records'),
+            const BottomNavigationBarItem(icon: Icon(Icons.message), label: 'SMS'),
+          ] else ...[
+            // const BottomNavigationBarItem(icon: Icon(Icons.place), label: 'Location'),
+            const BottomNavigationBarItem(icon: Icon(Icons.today), label: 'Calender'),
           ],
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.groups),
-            label: 'Contacts',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.folder),
-            label: 'Files',
-          ),
+          const BottomNavigationBarItem(icon: Icon(Icons.groups), label: 'Contacts'),
+          const BottomNavigationBarItem(icon: Icon(Icons.folder), label: 'Files'),
         ],
       ),
     );

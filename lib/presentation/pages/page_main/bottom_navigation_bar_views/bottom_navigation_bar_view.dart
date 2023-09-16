@@ -28,57 +28,40 @@ class BottomNavigationBarView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return (bnbType == BNBType.storage && Platform.isAndroid)
-        ? const FilesView()
-        : Container(
-            padding: const EdgeInsets.symmetric(
-              vertical: 30,
-              horizontal: 20,
-            ),
-            decoration: const BoxDecoration(
-              color: Color(0xfff6f6f6),
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-            ),
-            child: Column(
-              children: [
-                _Title(bnbType: bnbType),
-                const SizedBox(height: 40),
-                const _ActionCardList(),
-                TextButton(
-                  onPressed: () => launchUrl(
-                    Uri.parse(
-                        'https://docs.google.com/document/d/1aqZtQoF07VW1PtumKUw5sObgpE6d25hmM5HoPB1BojI/edit'),
-                    mode: LaunchMode.externalApplication,
-                  ),
-                  child: const Text(
-                    'Privacy Policy',
-                    style: TextStyle(
-                      color: Colors.black45,
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
+    Widget page = const Offstage();
+    if (bnbType == BNBType.files && Platform.isAndroid) {
+      page = const FilesView();
+      // } else if (bnbType == BNBType.calender && Platform.isIOS) {
+      // page = ;
+    } else {
+      page = defaultBody();
+    }
+    return page;
   }
-}
 
-class _Title extends ConsumerWidget {
-  const _Title({required this.bnbType});
-
-  final BNBType bnbType;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final providerMainRead = ref.read(providerMain.notifier);
-
-    return Text(
-      providerMainRead.getTitlePage(bnbType),
-      style: const TextStyle(
-        fontSize: 25,
-        fontWeight: FontWeight.bold,
-        color: ConstantsColors.colorBlueGrey,
+  Widget defaultBody() {
+    const privacyUrl =
+        'https://docs.google.com/document/d/1aqZtQoF07VW1PtumKUw5sObgpE6d25hmM5HoPB1BojI/edit';
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        vertical: 30,
+        horizontal: 20,
+      ),
+      decoration: const BoxDecoration(
+        color: Color(0xfff6f6f6),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Column(
+        children: [
+          Text(bnbType.name.toCapitalized(), style: CommonStyles.titleStyle),
+          const SizedBox(height: 40),
+          const _ActionCardList(),
+          TextButton(
+            onPressed: () =>
+                launchUrl(Uri.parse(privacyUrl), mode: LaunchMode.externalApplication),
+            child: const Text('Privacy Policy', style: CommonStyles.clickable),
+          ),
+        ],
       ),
     );
   }
@@ -92,8 +75,7 @@ class _ActionCardList extends ConsumerWidget {
     final providerMainRead = ref.read(providerMain.notifier);
     final providerMainWatch = ref.watch(providerMain);
 
-    String title = providerMainRead
-        .getTitlePage(providerMainRead.bnbList[providerMainWatch.currentTabIndex]);
+    String title = providerMainRead.bnbList[providerMainWatch.currentTabIndex].name;
     List<CardModel> cardModelList = providerMainRead.getCardModelList(title);
 
     return Expanded(
@@ -124,6 +106,7 @@ class _CardItemState extends State<_CardItem> {
     final title = listMainModelItem.title;
     bool isEnable = true;
     final mainScope = providerMainScope(context);
+
     // final providerMainWatch = ref.watch(providerMain);
     return Card(
       child: Padding(
@@ -133,7 +116,7 @@ class _CardItemState extends State<_CardItem> {
               ? () async {
                   if (title == 'Backup') {
                     await CardActions.onBackup(context, mainTitle);
-                    print('START: setState()');
+
                     setState(() {});
                   }
                   if (title == 'Restore') CardActions.onRestore(context, mainTitle);
@@ -141,17 +124,19 @@ class _CardItemState extends State<_CardItem> {
                   if (title == 'View') {
                     // Default
                     Widget page = ViewBackupPage(
-                        title: '$mainTitle Backup',
+                        title: '${mainTitle.toCapitalized()} Backup',
                         body: const Column(children: [Row()]));
 
                     if (mainTitle == 'Messages') {
                       page = _buildViewMessages(context);
-                    } else if (mainTitle == 'Call Records') {
+                    } else if (mainTitle == 'call records') {
                       page = _buildViewCallRecords(context);
-                    } else if (mainTitle == 'Contacts') {
+                    } else if (mainTitle == 'contacts') {
                       page = _buildViewContacts(context);
-                    } else if (mainTitle == 'Files') {
+                    } else if (mainTitle == 'files') {
                       page = _buildViewFiles(context);
+                    } else if (mainTitle == 'calender') {
+                      page = _buildViewCalenders(context);
                     }
 
                     // 'Files'
@@ -173,14 +158,20 @@ class _CardItemState extends State<_CardItem> {
               color: isEnable ? ConstantsColors.colorWhite : ConstantsColors.colorWhite60,
             ),
           ),
-          title: Text(
-            (title == 'View' &&
-                    mainTitle == 'Files' &&
-                    context.listenUniProvider.files.isNotEmpty)
-                ? 'View ${context.uniProvider.files.length} Files'
-                : '$title',
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
+          title: Builder(builder: (context) {
+            var txt = '$title';
+            if (title == 'View' &&
+                mainTitle == 'Files' &&
+                context.listenUniProvider.files.isNotEmpty) {
+              txt = 'View ${context.uniProvider.files.length} Files';
+              //
+            } else if (title == 'View' &&
+                mainTitle == 'calender' &&
+                context.listenUniProvider.calendars.isNotEmpty) {
+              txt = 'View ${context.uniProvider.calendars.length} Calenders';
+            }
+            return Text(txt, style: const TextStyle(fontWeight: FontWeight.bold));
+          }),
           subtitle: Padding(
             padding: const EdgeInsets.only(top: 4),
             child: Text(
@@ -195,7 +186,7 @@ class _CardItemState extends State<_CardItem> {
 
   Widget _buildViewContacts(BuildContext context) {
     final listMainModelItem = widget.listMainModelItem;
-    final mainTitle = widget.mainTitle;
+    final mainTitle = widget.mainTitle.toCapitalized();
     final mainProvider = providerMainScope(context);
     var contacts = providerMainScope(context).contacts;
 
@@ -225,9 +216,44 @@ class _CardItemState extends State<_CardItem> {
     );
   }
 
+  Widget _buildViewCalenders(BuildContext context) {
+    final listMainModelItem = widget.listMainModelItem;
+    final mainTitle = widget.mainTitle.toCapitalized();
+    final mainProvider = providerMainScope(context);
+    var calenders = context.uniProvider.calendars;
+
+    return ViewBackupPage(
+      title: '$mainTitle Backup',
+      body: ListView.builder(
+        itemCount: calenders.length,
+        itemBuilder: (context, i) {
+          final calender = calenders[i];
+
+          return Column(
+            children: [
+              Card(
+                child: ListTile(
+                  leading: const CircleAvatar(child: Icon(Icons.today)),
+                  title: Text('${calender.name}',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  subtitle: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child:
+                        Text('${calender.accountName}', style: TextStyle(fontSize: 13)),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 15),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
   Widget _buildViewFiles(BuildContext context) {
     final listMainModelItem = widget.listMainModelItem;
-    final mainTitle = widget.mainTitle;
+    final mainTitle = widget.mainTitle.toCapitalized();
     final mainProvider = providerMainScope(context);
     var files = context.uniProvider.files;
 

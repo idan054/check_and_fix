@@ -1,9 +1,16 @@
+import 'package:device_calendar/device_calendar.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class UniProvider with ChangeNotifier {
   List<PlatformFile> files = [];
+  List<Calendar> calendars = [];
+
+  void calendersUpdate(List<Calendar> data, {bool notify = true}) {
+    calendars = data;
+    if (notify) notifyListeners();
+  }
 
   void filesUpdate(List<PlatformFile> data, {bool notify = true}) {
     files = data;

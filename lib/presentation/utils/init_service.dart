@@ -83,16 +83,17 @@ class Init {
     return status.isGranted;
   }
 
-  static Future dummyLoader() async {
+  static Future dummyLoader([String? type]) async {
     EasyLoading.show(
         dismissOnTap: false,
-        status: 'Auto Backup running...',
+        status: '${type ?? 'Auto'}'
+            ' Backup running...',
         maskType: EasyLoadingMaskType.custom);
 
     await Future.delayed(const Duration(milliseconds: 2250));
 
-    EasyLoading.showSuccess('Backup completed!',
-        dismissOnTap: true,
+    await EasyLoading.showSuccess('Backup completed!',
+        dismissOnTap: false,
         duration: const Duration(milliseconds: 1250),
         maskType: EasyLoadingMaskType.custom);
   }

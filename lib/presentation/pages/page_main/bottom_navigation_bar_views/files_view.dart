@@ -15,7 +15,7 @@ class FilesView extends StatefulWidget {
 class _FilesViewState extends State<FilesView> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return buildAndroidFilesView();
   }
 
   Widget buildAndroidFilesView() {

@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:check_and_fix/data/models/card_model.dart';
 import 'package:check_and_fix/data/models/card_model/main_model.dart';
 import 'package:check_and_fix/data/models/sms_model/sms_model.dart';
-import 'package:check_and_fix/presentation/pages/page_main/bottom_navigation_bar_views/bottom_navigation_bar_view.dart';
 import 'package:check_and_fix/services/api_services.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
@@ -27,17 +26,12 @@ class ProviderMain extends StateNotifier<MainModel> {
     if (Platform.isAndroid) ...[
       BNBType.callRecords,
       BNBType.sms,
+    ] else ...[
+      // BNBType.location,
+      BNBType.calender,
     ],
     BNBType.contacts,
-    BNBType.storage,
-  ];
-  final List<Widget> tabsList = [
-    if (Platform.isAndroid) ...[
-      const BottomNavigationBarView(bnbType: BNBType.callRecords),
-      const BottomNavigationBarView(bnbType: BNBType.sms),
-    ],
-    const BottomNavigationBarView(bnbType: BNBType.contacts),
-    const BottomNavigationBarView(bnbType: BNBType.storage),
+    BNBType.files,
   ];
 
   void updateCurrentTabIndex(int index) => state = state.copyWith(currentTabIndex: index);
@@ -52,7 +46,8 @@ class ProviderMain extends StateNotifier<MainModel> {
     List<CardModel> listMainModelList = [];
 
     listMainModelList.add(CardModel(
-      icon: Icons.person,
+      // icon: Icons.person,
+      icon: Icons.backup,
       title: 'Backup',
       subtitle: 'Take all $title backup in your directory.',
     ));
@@ -70,26 +65,6 @@ class ProviderMain extends StateNotifier<MainModel> {
     ));
 
     return listMainModelList;
-  }
-
-  String getTitlePage(BNBType bnbType) {
-    String titlePage = '';
-
-    switch (bnbType) {
-      case BNBType.callRecords:
-        titlePage = 'Call Records';
-        break;
-      case BNBType.contacts:
-        titlePage = 'Contacts';
-        break;
-      case BNBType.storage:
-        titlePage = 'Files';
-        break;
-      case BNBType.sms:
-        titlePage = 'Messages';
-        break;
-    }
-    return titlePage;
   }
 
   IconData getImage(String bnbType) {

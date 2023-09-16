@@ -19,8 +19,7 @@ mixin _$MainModel {
   int get currentTabIndex => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
-  $MainModelCopyWith<MainModel> get copyWith =>
-      throw _privateConstructorUsedError;
+  $MainModelCopyWith<MainModel> get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
@@ -57,8 +56,7 @@ class _$MainModelCopyWithImpl<$Res, $Val extends MainModel>
 
 /// @nodoc
 abstract class _$$_MainModelCopyWith<$Res> implements $MainModelCopyWith<$Res> {
-  factory _$$_MainModelCopyWith(
-          _$_MainModel value, $Res Function(_$_MainModel) then) =
+  factory _$$_MainModelCopyWith(_$_MainModel value, $Res Function(_$_MainModel) then) =
       __$$_MainModelCopyWithImpl<$Res>;
   @override
   @useResult
@@ -66,11 +64,9 @@ abstract class _$$_MainModelCopyWith<$Res> implements $MainModelCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_MainModelCopyWithImpl<$Res>
-    extends _$MainModelCopyWithImpl<$Res, _$_MainModel>
+class __$$_MainModelCopyWithImpl<$Res> extends _$MainModelCopyWithImpl<$Res, _$_MainModel>
     implements _$$_MainModelCopyWith<$Res> {
-  __$$_MainModelCopyWithImpl(
-      _$_MainModel _value, $Res Function(_$_MainModel) _then)
+  __$$_MainModelCopyWithImpl(_$_MainModel _value, $Res Function(_$_MainModel) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -90,7 +86,7 @@ class __$$_MainModelCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_MainModel implements _MainModel {
-  const _$_MainModel({this.currentTabIndex = 0});
+  const _$_MainModel({this.currentTabIndex = 1});
 
   @override
   @JsonKey()
@@ -127,6 +123,5 @@ abstract class _MainModel implements MainModel {
   int get currentTabIndex;
   @override
   @JsonKey(ignore: true)
-  _$$_MainModelCopyWith<_$_MainModel> get copyWith =>
-      throw _privateConstructorUsedError;
+  _$$_MainModelCopyWith<_$_MainModel> get copyWith => throw _privateConstructorUsedError;
 }

@@ -24,7 +24,9 @@ enum BNBType {
   callRecords,
   sms,
   contacts,
-  storage,
+  files,
+  location,
+  calender,
 }
 
 DateFormat serverFormat = DateFormat('dd-MM-yyyy hh:mm:ss');
