@@ -1,6 +1,6 @@
 {
-    "name": "check_and_fix",
-    "short_name": "check_and_fix",
+    "name": "files_sync",
+    "short_name": "files_sync",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

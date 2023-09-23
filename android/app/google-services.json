@@ -14,7 +14,7 @@
       },
       "oauth_client": [
         {
-          "client_id": "615536036973-q55q9h14iqqe9njpq6sdbv96irc5vfcb.apps.googleusercontent.com",
+          "client_id": "615536036973-efss60n4tl2lh6ka6rn150bulhp3pl5p.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -27,8 +27,59 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "615536036973-q55q9h14iqqe9njpq6sdbv96irc5vfcb.apps.googleusercontent.com",
+              "client_id": "615536036973-efss60n4tl2lh6ka6rn150bulhp3pl5p.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "615536036973-08099jvfi6s3ois48pmassvbjkcblvkb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.files.filesSync"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:615536036973:android:91512d1bbcdc5cb3b34364",
+        "android_client_info": {
+          "package_name": "com.example.files_sync"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "615536036973-50mvacrskm0rkilafj7jntcf3km9q820.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.files_sync",
+            "certificate_hash": "7e9f1b3c6619aa46597e772fd957df55cebd445d"
+          }
+        },
+        {
+          "client_id": "615536036973-efss60n4tl2lh6ka6rn150bulhp3pl5p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBv66Klp6GB_kWy_uuPYxNbuxsnpyIQSM8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "615536036973-efss60n4tl2lh6ka6rn150bulhp3pl5p.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "615536036973-08099jvfi6s3ois48pmassvbjkcblvkb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.files.filesSync"
+              }
             }
           ]
         }

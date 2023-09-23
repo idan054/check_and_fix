@@ -1,4 +1,4 @@
-package com.cohen.upgrade.upgrade_service
+package com.example.files_sync
 
 import io.flutter.embedding.android.FlutterActivity
 

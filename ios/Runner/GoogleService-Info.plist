@@ -3,9 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>615536036973-c5gb93smjpq0dod54ltec26rmik86iq4.apps.googleusercontent.com</string>
+	<string>615536036973-08099jvfi6s3ois48pmassvbjkcblvkb.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.615536036973-c5gb93smjpq0dod54ltec26rmik86iq4</string>
+	<string>com.googleusercontent.apps.615536036973-08099jvfi6s3ois48pmassvbjkcblvkb</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>615536036973-50mvacrskm0rkilafj7jntcf3km9q820.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
 	<string>AIzaSyDy-nrlT33W8aGipVcn43JB1o5fPMV3s5g</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.checkAndFix</string>
+	<string>com.files.filesSync</string>
 	<key>PROJECT_ID</key>
 	<string>phone-backup-free</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:615536036973:ios:6a22527ff0a16927b34364</string>
+	<string>1:615536036973:ios:ecb9d9222dc5c2fbb34364</string>
 </dict>
 </plist>

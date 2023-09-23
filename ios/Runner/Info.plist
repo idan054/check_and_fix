@@ -2,27 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <!-- Permission options for the `bluetooth` -->
-    <key>NSBluetoothAlwaysUsageDescription</key>
-    <string>bluetooth</string>
-    <key>NSBluetoothPeripheralUsageDescription</key>
-    <string>bluetooth</string>
-    <!-- Permission options for the `photos` group -->
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>photos</string>
-    <key>NSCameraUsageDescription</key>
-    <string>camera</string>
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Need location when in use</string>
-    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>Always and when in use!</string>
-
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Check And Fix</string>
+	<string>Files Sync</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -30,23 +15,28 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>check_and_fix</string>
+	<string>files_sync</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.615536036973-08099jvfi6s3ois48pmassvbjkcblvkb</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>NSContactsUsageDescription</key>
-	<string>This app wants to Check and Fix contacts</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app wants to Check and Fix location service</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>This app wants to Check and Fix microphone quality</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -66,8 +56,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
-
 </dict>
 </plist>
