@@ -57,7 +57,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBv66Klp6GB_kWy_uuPYxNbuxsnpyIQSM8',
-    appId: '1:615536036973:android:91512d1bbcdc5cb3b34364',
+    appId: '1:615536036973:android:3ec73d6ad50defb8b34364',
     messagingSenderId: '615536036973',
     projectId: 'phone-backup-free',
     storageBucket: 'phone-backup-free.appspot.com',
@@ -65,12 +65,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDy-nrlT33W8aGipVcn43JB1o5fPMV3s5g',
-    appId: '1:615536036973:ios:ecb9d9222dc5c2fbb34364',
+    appId: '1:615536036973:ios:6a22527ff0a16927b34364',
     messagingSenderId: '615536036973',
     projectId: 'phone-backup-free',
     storageBucket: 'phone-backup-free.appspot.com',
-    androidClientId: '615536036973-50mvacrskm0rkilafj7jntcf3km9q820.apps.googleusercontent.com',
-    iosClientId: '615536036973-08099jvfi6s3ois48pmassvbjkcblvkb.apps.googleusercontent.com',
-    iosBundleId: 'com.files.filesSync',
+    iosClientId: '615536036973-c5gb93smjpq0dod54ltec26rmik86iq4.apps.googleusercontent.com',
+    iosBundleId: 'com.example.checkAndFix',
   );
 }

@@ -1,160 +1,41 @@
-import 'dart:developer';
-import 'package:files_sync/firebase_options.dart';
-import 'package:files_sync/View/record.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:check_and_fix/presentation/widgets/permission_handler_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:stacked_firebase_auth/stacked_firebase_auth.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  final dbDir = await getApplicationDocumentsDirectory();
+  Hive.init(dbDir.path);
   runApp(const MyApp());
+  configLoading();
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Login'),
+      builder: EasyLoading.init(),
+      home: const PermissionHandlerWidget(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
+void configLoading() {
+  EasyLoading.instance
+    ..displayDuration = const Duration(milliseconds: 2000)
+    ..indicatorType = EasyLoadingIndicatorType.dualRing
+    ..loadingStyle = EasyLoadingStyle.light
+    ..indicatorSize = 45.0
+    ..radius = 10.0
+    ..maskColor = Colors.black.withOpacity(0.20)
+    ..progressColor = Colors.blue
+    ..backgroundColor = Colors.green
+    ..indicatorColor = Colors.red
+    ..textColor = Colors.yellow
+    ..userInteractions = false
+    ..dismissOnTap = false;
 }
-
-class _MyHomePageState extends State<MyHomePage> {
-
-  final FirebaseAuthenticationService firebaseAuthenticationService = FirebaseAuthenticationService();
-
-  googleAuthentication() async {
-      final result = await firebaseAuthenticationService.signInWithGoogle();
-      handleResult(result);
-  }
-  appleAuthentication() async {
-    final result = await firebaseAuthenticationService.signInWithApple(
-      appleRedirectUri: 'https://phone-backup-free.firebaseapp.com/__/auth/handler',
-      appleClientId: 'com.files.service.filessync',
-    );
-    handleResult(result);
-  }
-
-  handleResult(FirebaseAuthenticationResult result){
-    if(result.hasError){
-      log(result.errorMessage!);
-      SnackBar snackBar = SnackBar(
-        content: Text(result.errorMessage!),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }else{
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => Records(userName: result.user!.email!)),
-      );
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Container(
-        alignment: Alignment.center,
-        margin: const EdgeInsets.all(30),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            CustomizedButton(
-              image: 'assets/images/apple.png',
-              title: 'Continue with Apple',
-              function: appleAuthentication,
-            ),
-            const Gap(
-              height: 15,
-            ),
-            CustomizedButton(
-                image: 'assets/images/google.png',
-                title: 'Continue with Google',
-                function: googleAuthentication
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-
-class CustomizedButton extends StatelessWidget {
-  final String image;
-  final String title;
-  final Function function;
-  const CustomizedButton({Key? key, required this.image, required this.title, required this.function}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.white,
-      ),
-      onPressed: (){
-        function();
-      },
-      child: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: Row(
-          children: [
-            Image.asset(image),
-            const Gap(
-              width: 15,
-            ),
-            Text(
-              title,
-              style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class Gap extends StatelessWidget {
-  final double height;
-  final double width;
-  const Gap({Key? key, this.height = 0, this.width = 0}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: height,
-      width: width,
-    );
-  }
-}
-
-
-
