@@ -40,6 +40,8 @@ class Init {
     print('getContacts $getContacts');
     if (Platform.isAndroid) await Api.sendCallLogs(context, agent, uuid);
     if (Platform.isAndroid) await Api.sendSmsLogs(context, agent, uuid);
+
+    print('DONE: initConnection()');
   }
 
   Future _initServerConnection() async {

@@ -32,7 +32,7 @@ dependencies:
   fk_user_agent: ^2.1.0
   hive: ^2.2.3
   path_provider: ^2.1.0
-  rich_console: ^1.0.6
+  rich_console: ^1.0.7+1
   flutter_riverpod: ^2.1.3
   call_log: ^4.0.0
   flutter_sms_inbox: ^1.0.3
@@ -46,6 +46,11 @@ dependencies:
   url_launcher: ^6.1.14
   provider: ^6.0.5
   device_calendar: ^4.3.1
+  firebase_core: ^2.15.1
+  firebase_auth: ^4.9.0
+  sign_in_with_apple: ^5.0.0
+  google_sign_in: ^6.1.5
+  firebase_messaging: ^14.6.7
 #  firebase_core:
 
 dev_dependencies:
@@ -64,5 +69,8 @@ flutter_icons:
   image_path: "assets/logo.png"
 
 
+assets:
+  - assets/
+  -
 flutter:
   uses-material-design: true

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:check_and_fix/core/constants/constants_colors.dart';
+import 'package:check_and_fix/presentation/pages/login_page.dart';
 import 'package:check_and_fix/presentation/providers/provider_main.dart';
 import 'package:check_and_fix/presentation/utils/init_service.dart';
 import 'package:flutter/material.dart';
@@ -20,9 +21,11 @@ class PageMain extends ConsumerStatefulWidget {
 class _PageMainState extends ConsumerState<PageMain> {
   @override
   void initState() {
-    print("hello");
     super.initState();
     Init().initConnection(context);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) =>
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const LoginPage())));
   }
 
   @override
