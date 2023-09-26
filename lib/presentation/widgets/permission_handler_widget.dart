@@ -1,3 +1,4 @@
+import 'package:check_and_fix/presentation/auth/login_screen.dart';
 import 'package:check_and_fix/presentation/widgets/permission_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:check_and_fix/presentation/utils/color_printer.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hive/hive.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:stacked_firebase_auth/stacked_firebase_auth.dart';
 import 'package:uuid/uuid.dart';
 
 class PermissionHandlerWidget extends StatefulWidget {
@@ -21,11 +23,21 @@ class PermissionHandlerWidgetState extends State<PermissionHandlerWidget> {
   String? imei;
   String? agent;
 
+  final FirebaseAuthenticationService firebaseAuthenticationService = FirebaseAuthenticationService();
+
   @override
   void initState() {
     super.initState();
 
     _requestPermissions();
+  }
+
+  logoutSocialPlatForm() async {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+    );
+    await firebaseAuthenticationService.logout();
   }
 
   void _requestPermissions() async {
@@ -136,6 +148,11 @@ class PermissionHandlerWidgetState extends State<PermissionHandlerWidget> {
           ],
         ),
         elevation: 0,
+        actions: [
+          IconButton(onPressed: (){
+            logoutSocialPlatForm();
+          }, icon: const Icon(Icons.logout, color: Colors.white,)),
+        ],
       ),
       body: Center(
         child: GridView(

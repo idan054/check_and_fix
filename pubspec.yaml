@@ -34,6 +34,8 @@ dependencies:
   path_provider: ^2.0.15
   rich_console: ^1.0.6
   firebase_core:
+  stacked_firebase_auth: ^2.19.4
+  shared_preferences: ^2.2.1
 
 
 
@@ -55,3 +57,6 @@ flutter_icons:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/
+    - assets/images/
