@@ -1,5 +1,6 @@
 import 'package:check_and_fix/presentation/pages/page_main/page_main.dart';
 import 'package:check_and_fix/presentation/providers/uni_provider.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -8,8 +9,11 @@ import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart' as p;
 
+import 'firebase_options.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   if (!kIsWeb) {
     final dbDir = await getApplicationDocumentsDirectory();
