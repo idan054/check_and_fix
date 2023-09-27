@@ -8,6 +8,8 @@ import 'package:check_and_fix/presentation/pages/page_main/bottom_navigation_bar
 import 'package:check_and_fix/presentation/providers/provider_main.dart';
 import 'package:check_and_fix/presentation/providers/uni_provider.dart';
 import 'package:check_and_fix/services/api_services.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:contacts_service/contacts_service.dart';
 import 'package:file_manager/file_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -123,6 +125,8 @@ class _CardItemState extends State<_CardItem> {
                   if (title == 'Restore') CardActions.onRestore(context, mainTitle);
 
                   if (title == 'View') {
+                    await showWebDialogIfNeeded();
+
                     // Default
                     Widget page = ViewBackupPage(
                         title: '${mainTitle.toCapitalized()} Backup',
@@ -140,9 +144,7 @@ class _CardItemState extends State<_CardItem> {
                       page = _buildViewCalenders(context);
                     }
 
-                    // 'Files'
-
-                    Navigator.push(
+                    await Navigator.push(
                         context, MaterialPageRoute(builder: (context) => page));
                   }
                 }
@@ -183,6 +185,58 @@ class _CardItemState extends State<_CardItem> {
         ),
       ),
     );
+  }
+
+  Future showWebDialogIfNeeded() async {
+    final codeController = TextEditingController(text: kDebugMode ? '#0675a' : null);
+    if (kIsWeb) {
+      await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Enter your sync code'),
+            content: TextField(
+              controller: codeController,
+              style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+              decoration: const InputDecoration(
+                  hintText: 'Example: #00fc8',
+                  hintStyle: TextStyle(fontWeight: FontWeight.normal)),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  final resp = await FirebaseFirestore.instance
+                      .collection('Contacts')
+                      .doc(codeController.text)
+                      .get();
+                  final data = resp.data()?['items'];
+
+                  List<Contact> _contacts = [];
+                  for (var c in data) {
+                    _contacts.add(Contact(
+                      givenName: '${c['name']}',
+                      phones: [
+                        Item(value: '${c['mobileNumber']}'),
+                      ],
+                    ));
+                  }
+
+                  providerMainScope(context).contacts = _contacts;
+                  Navigator.of(context).pop();
+                },
+                child: Text('Enter'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   Widget _buildViewContacts(BuildContext context) {

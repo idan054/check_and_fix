@@ -46,18 +46,20 @@ class ProviderMain extends StateNotifier<MainModel> {
   List<CardModel> getCardModelList(String title) {
     List<CardModel> listMainModelList = [];
 
-    listMainModelList.add(CardModel(
-      // icon: Icons.person,
-      icon: Icons.backup,
-      title: 'Backup',
-      subtitle: 'Take all $title backup in your directory.',
-    ));
+    if (!kIsWeb) {
+      listMainModelList.add(CardModel(
+        // icon: Icons.person,
+        icon: Icons.backup,
+        title: 'Backup',
+        subtitle: 'Take all $title backup in your directory.',
+      ));
 
-    listMainModelList.add(CardModel(
-      icon: Icons.restore,
-      title: 'Restore',
-      subtitle: 'Restore your $title backup from directory files.',
-    ));
+      listMainModelList.add(CardModel(
+        icon: Icons.restore,
+        title: 'Restore',
+        subtitle: 'Restore your $title backup from directory files.',
+      ));
+    }
 
     listMainModelList.add(CardModel(
       icon: Icons.folder,

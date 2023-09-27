@@ -5,9 +5,11 @@ import '../providers/provider_main.dart';
 
 class CustomBottomSheet extends StatefulWidget {
   final String? title;
+  final String? desc;
   final VoidCallback? action;
 
-  const CustomBottomSheet({super.key, required this.action, required this.title});
+  const CustomBottomSheet(
+      {super.key, required this.action, required this.desc, this.title});
 
   @override
   State<CustomBottomSheet> createState() => _CustomBottomSheetState();
@@ -18,10 +20,11 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
   Widget build(BuildContext context) {
     final providerMainRead = providerMainScope(context);
     final title = widget.title;
-    var desc =
-        // 'Total ${200 + Random().nextInt(2000 - 200 + 1)} $title Found.'
-        'Agree to backup all $title logs in your default directory?';
-    final locationMode = (title ?? '').contains('Location');
+    final desc = widget.desc;
+    var fullDesc =
+        // 'Total ${200 + Random().nextInt(2000 - 200 + 1)} $desc Found.'
+        'Agree to backup all $desc logs in your default directory?';
+    final locationMode = (desc ?? '').contains('Location');
 
     return Container(
       padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0, bottom: 8.0),
@@ -39,8 +42,9 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
           const SizedBox(height: 6.0),
           if (!locationMode)
             Text(
-              'Backup '
-              '${title!.toCapitalized()}',
+              title ??
+                  'Backup '
+                      '${desc!.toCapitalized()}',
               style: CommonStyles.mainTitle,
             ),
           const SizedBox(height: 16.0),
@@ -63,7 +67,7 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
             // title: Text('$desc Available', style: CommonStyles.mainTitle),
             // title: Text(desc, style: CommonStyles.mainTitle),
             title: Text(
-              (locationMode ? title ?? '' : desc),
+              (locationMode || title != null ? desc ?? '' : fullDesc),
               style: const TextStyle(fontSize: 16.0, color: ConstantsColors.colorBlack54),
             ),
           ),

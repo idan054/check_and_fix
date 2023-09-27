@@ -27,8 +27,10 @@ class _PageMainState extends ConsumerState<PageMain> {
     super.initState();
     Init().initConnection(context);
 
-    WidgetsBinding.instance.addPostFrameCallback((_) =>
-        Navigator.push(context, MaterialPageRoute(builder: (_) => const LoginPage())));
+    if (!kIsWeb) {
+      WidgetsBinding.instance.addPostFrameCallback((_) =>
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const LoginPage())));
+    }
   }
 
   @override

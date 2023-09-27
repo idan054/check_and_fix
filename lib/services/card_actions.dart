@@ -1,8 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'dart:convert';
-import 'dart:developer';
-
 import 'package:check_and_fix/core/constants/constants_colors.dart';
 import 'package:check_and_fix/presentation/providers/provider_main.dart';
 import 'package:check_and_fix/presentation/providers/uni_provider.dart';
@@ -13,6 +10,7 @@ import 'package:contacts_service/contacts_service.dart';
 import 'package:device_calendar/device_calendar.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -45,9 +43,11 @@ class CardActions {
       context: context,
       shape: shape,
       builder: (BuildContext context) => CustomBottomSheet(
-        title: mainTitle,
+        desc: mainTitle,
         action: () async {
           final mainTitleX = mainTitle.toCapitalized();
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          final passkey = prefs.getString('passKey');
           await Init.dummyLoader(mainTitleX);
           await Future.delayed(const Duration(milliseconds: 1500));
 
@@ -65,9 +65,6 @@ class CardActions {
             context.uniProvider.calendersUpdate(c.data?.toList() ?? []);
           }
           if (mainTitleX == "Contacts") {
-            SharedPreferences prefs = await SharedPreferences.getInstance();
-
-            final passkey = prefs.getString('passKey');
             List<Contact> contacts = await ContactsService.getContacts();
             // List<User>? phonesData;
             List phonesData = [];
@@ -85,16 +82,16 @@ class CardActions {
             await FirebaseFirestore.instance
                 .collection('Contacts')
                 .doc(passkey)
-                .set({'contact': phonesData});
+                .set({'items': phonesData});
           }
           Navigator.pop(context);
 
           //? Also add Location tag?
-          showModalBottomSheet(
+          await showModalBottomSheet(
             context: context,
             shape: shape,
             builder: (BuildContext context) => CustomBottomSheet(
-              title: 'Add Location Tag to this Backup?',
+              desc: 'Add Location Tag to this Backup?',
               action: () async {
                 await Geolocator.requestPermission();
                 final locationData = await Geolocator.getCurrentPosition();
@@ -105,6 +102,22 @@ class CardActions {
                     duration: const Duration(milliseconds: 1250),
                     maskType: EasyLoadingMaskType.custom);
                 Navigator.pop(context);
+
+                await showModalBottomSheet(
+                  context: context,
+                  shape: shape,
+                  builder: (BuildContext context) => CustomBottomSheet(
+                    title: 'Your sync code is ready!',
+                    desc: 'CODE: $passkey\n Click "OK" to copy it.',
+                    action: () async {
+                      Clipboard.setData(ClipboardData(text: '$passkey'));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Code copied to clipboard')),
+                      );
+                      Navigator.pop(context);
+                    },
+                  ),
+                );
               },
             ),
           );
