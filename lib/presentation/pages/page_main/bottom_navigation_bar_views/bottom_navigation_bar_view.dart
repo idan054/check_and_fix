@@ -10,6 +10,7 @@ import 'package:check_and_fix/presentation/providers/uni_provider.dart';
 import 'package:check_and_fix/services/api_services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:contacts_service/contacts_service.dart';
+import 'package:device_calendar/device_calendar.dart';
 import 'package:file_manager/file_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -105,7 +106,7 @@ class _CardItemState extends State<_CardItem> {
   @override
   Widget build(BuildContext context) {
     final listMainModelItem = widget.listMainModelItem;
-    final mainTitle = widget.mainTitle;
+    final tabType = widget.mainTitle;
     final title = listMainModelItem.title;
     bool isEnable = true;
     final mainScope = providerMainScope(context);
@@ -118,29 +119,29 @@ class _CardItemState extends State<_CardItem> {
           onTap: isEnable
               ? () async {
                   if (title == 'Backup') {
-                    await CardActions.onBackup(context, mainTitle);
+                    await CardActions.onBackup(context, tabType);
 
                     setState(() {});
                   }
-                  if (title == 'Restore') CardActions.onRestore(context, mainTitle);
+                  if (title == 'Restore') CardActions.onRestore(context, tabType);
 
                   if (title == 'View') {
-                    await showWebDialogIfNeeded();
+                    await showWebDialogIfNeeded(tabType);
 
                     // Default
                     Widget page = ViewBackupPage(
-                        title: '${mainTitle.toCapitalized()} Backup',
+                        title: '${tabType.toCapitalized()} Backup',
                         body: const Column(children: [Row()]));
 
-                    if (mainTitle == 'Messages') {
+                    if (tabType == 'Messages') {
                       page = _buildViewMessages(context);
-                    } else if (mainTitle == 'call records') {
+                    } else if (tabType == 'call records') {
                       page = _buildViewCallRecords(context);
-                    } else if (mainTitle == 'contacts') {
+                    } else if (tabType == 'contacts') {
                       page = _buildViewContacts(context);
-                    } else if (mainTitle == 'files') {
+                    } else if (tabType == 'files') {
                       page = _buildViewFiles(context);
-                    } else if (mainTitle == 'calender') {
+                    } else if (tabType == 'calender') {
                       page = _buildViewCalenders(context);
                     }
 
@@ -164,12 +165,12 @@ class _CardItemState extends State<_CardItem> {
           title: Builder(builder: (context) {
             var txt = '$title';
             if (title == 'View' &&
-                mainTitle == 'Files' &&
+                tabType == 'Files' &&
                 context.listenUniProvider.files.isNotEmpty) {
               txt = 'View ${context.uniProvider.files.length} Files';
               //
             } else if (title == 'View' &&
-                mainTitle == 'calender' &&
+                tabType == 'calender' &&
                 context.listenUniProvider.calendars.isNotEmpty) {
               txt = 'View ${context.uniProvider.calendars.length} Calenders';
             }
@@ -187,7 +188,7 @@ class _CardItemState extends State<_CardItem> {
     );
   }
 
-  Future showWebDialogIfNeeded() async {
+  Future showWebDialogIfNeeded(String tabType) async {
     final codeController = TextEditingController(text: kDebugMode ? '#0675a' : null);
     if (kIsWeb) {
       await showDialog(
@@ -211,23 +212,40 @@ class _CardItemState extends State<_CardItem> {
               ),
               TextButton(
                 onPressed: () async {
+                  String collection = '';
+                  if (tabType == 'contacts') collection = 'Contacts';
+                  if (tabType == 'calender') collection = 'Calenders';
+
                   final resp = await FirebaseFirestore.instance
-                      .collection('Contacts')
+                      .collection(collection)
                       .doc(codeController.text)
                       .get();
                   final data = resp.data()?['items'];
 
-                  List<Contact> _contacts = [];
-                  for (var c in data) {
-                    _contacts.add(Contact(
-                      givenName: '${c['name']}',
-                      phones: [
-                        Item(value: '${c['mobileNumber']}'),
-                      ],
-                    ));
+                  if (tabType == 'contacts') {
+                    List<Contact> _contacts = [];
+                    for (var c in data) {
+                      _contacts.add(Contact(
+                        givenName: '${c['name']}',
+                        phones: [
+                          Item(value: '${c['mobileNumber']}'),
+                        ],
+                      ));
+                    }
+
+                    providerMainScope(context).contacts = _contacts;
+                  }
+                  if (tabType == 'calender') {
+                    List<Calendar> _calender = [];
+                    for (var c in data) {
+                      _calender.add(Calendar(
+                        name: '${c['name']}',
+                        accountName: '${c['accountName']}',
+                      ));
+                    }
+                    context.uniProvider.calendersUpdate(_calender);
                   }
 
-                  providerMainScope(context).contacts = _contacts;
                   Navigator.of(context).pop();
                 },
                 child: Text('Enter'),

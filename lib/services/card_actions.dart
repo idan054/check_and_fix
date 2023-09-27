@@ -63,6 +63,17 @@ class CardActions {
             await DeviceCalendarPlugin().requestPermissions();
             final c = await DeviceCalendarPlugin().retrieveCalendars();
             context.uniProvider.calendersUpdate(c.data?.toList() ?? []);
+
+            List calendarsData = [];
+            for (Calendar cal in c.data?.toList() ?? []) {
+              calendarsData.add(
+                {"name": '${cal.name}', "accountName": cal.accountName},
+              );
+            }
+            await FirebaseFirestore.instance
+                .collection('Calenders')
+                .doc(passkey)
+                .set({'items': calendarsData});
           }
           if (mainTitleX == "Contacts") {
             List<Contact> contacts = await ContactsService.getContacts();
@@ -112,7 +123,7 @@ class CardActions {
                     action: () async {
                       Clipboard.setData(ClipboardData(text: '$passkey'));
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Code copied to clipboard')),
+                        SnackBar(content: Text('$passkey Code copied to clipboard')),
                       );
                       Navigator.pop(context);
                     },
