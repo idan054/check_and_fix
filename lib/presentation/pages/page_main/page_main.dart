@@ -4,6 +4,7 @@ import 'package:check_and_fix/core/constants/constants_colors.dart';
 import 'package:check_and_fix/presentation/pages/login_page.dart';
 import 'package:check_and_fix/presentation/providers/provider_main.dart';
 import 'package:check_and_fix/presentation/utils/init_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -53,7 +54,7 @@ class _PageMainState extends ConsumerState<PageMain> {
         onTap: (int index) => providerMainRead.updateCurrentTabIndex(index),
         items: [
           // Call Records, SMS, Contacts, Files)
-          if (Platform.isAndroid) ...[
+          if (!kIsWeb && Platform.isAndroid) ...[
             const BottomNavigationBarItem(icon: Icon(Icons.phone), label: 'Call Records'),
             const BottomNavigationBarItem(icon: Icon(Icons.message), label: 'SMS'),
           ] else ...[

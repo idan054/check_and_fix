@@ -3,6 +3,7 @@
 import 'dart:io' show Platform;
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -80,7 +81,7 @@ class AuthService {
   static Future<User?> _googleAuthPopup() async {
     print('START: _googleAuthPopup()');
     final googleProvider = await GoogleSignIn(
-            clientId: Platform.isIOS
+            clientId: !kIsWeb && Platform.isIOS
                 ? DefaultFirebaseOptions.currentPlatform.iosClientId
                 : DefaultFirebaseOptions.currentPlatform.androidClientId)
         .signIn();

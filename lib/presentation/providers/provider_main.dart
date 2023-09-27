@@ -5,6 +5,7 @@ import 'package:check_and_fix/data/models/card_model/main_model.dart';
 import 'package:check_and_fix/data/models/sms_model/sms_model.dart';
 import 'package:check_and_fix/services/api_services.dart';
 import 'package:contacts_service/contacts_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -23,7 +24,7 @@ ProviderMain providerMainScope(BuildContext context) =>
 class ProviderMain extends StateNotifier<MainModel> {
   ProviderMain() : super(const MainModel());
   final bnbList = [
-    if (Platform.isAndroid) ...[
+    if (!kIsWeb && Platform.isAndroid) ...[
       BNBType.callRecords,
       BNBType.sms,
     ] else ...[

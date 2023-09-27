@@ -9,6 +9,7 @@ import 'package:check_and_fix/presentation/providers/provider_main.dart';
 import 'package:check_and_fix/presentation/providers/uni_provider.dart';
 import 'package:check_and_fix/services/api_services.dart';
 import 'package:file_manager/file_manager.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -29,7 +30,7 @@ class BottomNavigationBarView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget page = const Offstage();
-    if (bnbType == BNBType.files && Platform.isAndroid) {
+    if (bnbType == BNBType.files && !kIsWeb && Platform.isAndroid) {
       page = const FilesView();
       // } else if (bnbType == BNBType.calender && Platform.isIOS) {
       // page = ;
