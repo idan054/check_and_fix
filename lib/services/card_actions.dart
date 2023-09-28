@@ -34,29 +34,29 @@ class CardActions {
     }
   }
 
-  static dialog(BuildContext context) async {
-    SharedPreferences? preferences = await SharedPreferences.getInstance();
-    final passkey = preferences.getString('passKey');
-    // log("Contacts backup ${passkey}");
-    // ignore: use_build_context_synchronously
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Backup Done'),
-          content: Text(
-              "To view ur data on the Web use the pass key below: $passkey"),
-          actions: [
-            TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text('Ok'))
-          ],
-        );
-      },
-    );
-  }
+  // static dialog(BuildContext context) async {
+  //   SharedPreferences? preferences = await SharedPreferences.getInstance();
+  //   final passkey = preferences.getString('passKey');
+  //   // log("Contacts backup ${passkey}");
+  //   // ignore: use_build_context_synchronously
+  //   await showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: Text('Backup Done'),
+  //         content: Text(
+  //             "To view ur data on the Web use the pass key below: $passkey"),
+  //         actions: [
+  //           TextButton(
+  //               onPressed: () {
+  //                 Navigator.pop(context);
+  //               },
+  //               child: const Text('Ok'))
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
   static Future onBackup(BuildContext context, String mainTitle) async {
     const shape = RoundedRectangleBorder(
@@ -117,8 +117,8 @@ class CardActions {
             await FirebaseFirestore.instance
                 .collection('Contacts')
                 .doc(passkey)
-                .set({'contact': phonesData});
-            await dialog(context);
+                .set({'items': phonesData});
+            // await dialog(context);
           }
           Navigator.pop(context);
 

@@ -21,11 +21,11 @@ class _PageMainState extends ConsumerState<ViewBackupPage> {
   @override
   Widget build(BuildContext context) {
     final isShowMessagesBackup = providerMainScope(context).isShowMessagesBackup;
-    print('isShowMessagesBackup ${isShowMessagesBackup}');
+    print('isShowMessagesBackup $isShowMessagesBackup');
 
     return Scaffold(
       backgroundColor: ConstantsColors.colorIndigoAccent,
-      appBar: commonAppBar(widget.title),
+      appBar: commonAppBar(false, widget.title),
       body: Container(
           padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
           decoration: const BoxDecoration(

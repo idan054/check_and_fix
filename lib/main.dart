@@ -1,8 +1,7 @@
-import 'dart:developer';
-
-import 'package:check_and_fix/presentation/pages/page_main/bottom_navigation_bar_views/calender_view.dart';
+import 'package:check_and_fix/presentation/pages/login_page.dart';
 import 'package:check_and_fix/presentation/pages/page_main/page_main.dart';
 import 'package:check_and_fix/presentation/providers/uni_provider.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -12,13 +11,19 @@ import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uuid/uuid.dart';
 
 import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  final deviceInfoPlugin = DeviceInfoPlugin();
+  final deviceInfo = await deviceInfoPlugin.deviceInfo;
+  final allInfo = deviceInfo.data;
+  print('---------');
+  print('deviceInfo ${deviceInfo}');
+  print('---------');
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
   if (prefs.getString("passKey") == "" || prefs.getString("passKey") == null) {
@@ -51,7 +56,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       builder: EasyLoading.init(),
-      home: const PageMain(),
+      home: kIsWeb ? const PageMain() : const LoginPage(),
     );
   }
 }

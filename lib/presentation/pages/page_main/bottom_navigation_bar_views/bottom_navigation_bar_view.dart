@@ -222,6 +222,8 @@ class _CardItemState extends State<_CardItem> {
                       .get();
                   final data = resp.data()?['items'];
 
+                  print('data ${data}');
+
                   if (tabType == 'contacts') {
                     List<Contact> _contacts = [];
                     for (var c in data) {

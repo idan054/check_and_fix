@@ -1,17 +1,14 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:check_and_fix/core/constants/constants_colors.dart';
-import 'package:check_and_fix/presentation/pages/login_page.dart';
 import 'package:check_and_fix/presentation/providers/provider_main.dart';
-import 'package:check_and_fix/presentation/utils/init_service.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../services/api_services.dart';
+import '../settings_page.dart';
 import 'bottom_navigation_bar_views/bottom_navigation_bar_view.dart';
 
 class PageMain extends ConsumerStatefulWidget {
@@ -22,17 +19,6 @@ class PageMain extends ConsumerStatefulWidget {
 }
 
 class _PageMainState extends ConsumerState<PageMain> {
-  @override
-  void initState() {
-    super.initState();
-    Init().initConnection(context);
-
-    if (!kIsWeb) {
-      WidgetsBinding.instance.addPostFrameCallback((_) =>
-          Navigator.push(context, MaterialPageRoute(builder: (_) => const LoginPage())));
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final providerMainWatch = ref.watch(providerMain);
@@ -75,8 +61,9 @@ class _PageMainState extends ConsumerState<PageMain> {
 
 class commonAppBar extends StatefulWidget implements PreferredSizeWidget {
   String? title;
+  bool showButton;
 
-  commonAppBar([this.title]);
+  commonAppBar([this.showButton = true, this.title]);
 
   @override
   State<commonAppBar> createState() => _commonAppBarState();
@@ -97,30 +84,46 @@ class _commonAppBarState extends State<commonAppBar> {
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
       actions: [
-        if (widget.title != null)
-          InkWell(
-            onTap: () async {
-              EasyLoading.showSuccess('delete completed!',
-                  dismissOnTap: true,
-                  duration: const Duration(milliseconds: 1250),
-                  maskType: EasyLoadingMaskType.custom);
+        if (widget.showButton)
+          widget.title == null
+              ? kIsWeb
+                  ? const Offstage()
+                  : InkWell(
+                      onTap: () async {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (_) => const SettingsPage()));
+                      },
+                      child: const Padding(
+                        padding: EdgeInsets.only(right: 20.0),
+                        child: Icon(
+                          Icons.settings,
+                          color: Colors.white,
+                        ),
+                      ),
+                    )
+              : InkWell(
+                  onTap: () async {
+                    EasyLoading.showSuccess('delete completed!',
+                        dismissOnTap: true,
+                        duration: const Duration(milliseconds: 1250),
+                        maskType: EasyLoadingMaskType.custom);
 
-              providerMainScope(context).isShowMessagesBackup = false;
+                    providerMainScope(context).isShowMessagesBackup = false;
 
-              if (widget.title == 'Call Records Backup') {
-                Api().updateCallLogs(context, true);
-              }
+                    if (widget.title == 'Call Records Backup') {
+                      Api().updateCallLogs(context, true);
+                    }
 
-              Navigator.pop(context);
-            },
-            child: const Padding(
-              padding: EdgeInsets.only(right: 20.0),
-              child: Icon(
-                Icons.delete,
-                color: Colors.red,
-              ),
-            ),
-          )
+                    Navigator.pop(context);
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.only(right: 20.0),
+                    child: Icon(
+                      Icons.delete,
+                      color: Colors.red,
+                    ),
+                  ),
+                )
       ],
     );
   }
