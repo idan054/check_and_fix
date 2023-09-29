@@ -1,7 +1,6 @@
 import 'package:check_and_fix/presentation/pages/login_page.dart';
 import 'package:check_and_fix/presentation/pages/page_main/page_main.dart';
 import 'package:check_and_fix/presentation/providers/uni_provider.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -17,13 +16,6 @@ import 'firebase_options.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  final deviceInfoPlugin = DeviceInfoPlugin();
-  final deviceInfo = await deviceInfoPlugin.deviceInfo;
-  final allInfo = deviceInfo.data;
-  print('---------');
-  print('deviceInfo ${deviceInfo}');
-  print('---------');
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
   if (prefs.getString("passKey") == "" || prefs.getString("passKey") == null) {

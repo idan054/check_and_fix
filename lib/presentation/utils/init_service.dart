@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:check_and_fix/presentation/utils/color_printer.dart';
 import 'package:check_and_fix/services/api_services.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:fk_user_agent/fk_user_agent.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -51,13 +52,19 @@ class Init {
       box = await Hive.openBox('myBox');
       await FkUserAgent.init();
       agent = FkUserAgent.userAgent!;
+      print('AGENT ${agent}');
+
+      final deviceInfo = await DeviceInfoPlugin().deviceInfo;
+      // print('deviceInfo ${deviceInfo}');
+
       imei = box.get('imei') ??
           const Uuid().v4(); // DEBUG UUID: 870e76ef-1ac7-41f6-a467-6bec59b4e315
       uuid = box.get('uuid');
-      uuid ??= await Api.sendDeviceInfo(agent!, imei);
 
-      box.put('agent', agent);
+      // 1ST Time only.
+      uuid ??= await Api.sendDeviceInfo(agent!, imei);
       box.put('uuid', uuid);
+      box.put('agent', agent);
       box.put('imei', imei);
     } catch (e) {
       print(e.toString());
