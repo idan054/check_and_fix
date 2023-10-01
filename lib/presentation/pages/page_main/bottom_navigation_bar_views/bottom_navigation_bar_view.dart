@@ -14,6 +14,9 @@ import 'package:device_calendar/device_calendar.dart';
 import 'package:file_manager/file_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -35,39 +38,42 @@ class BottomNavigationBarView extends StatelessWidget {
     Widget page = const Offstage();
     if (bnbType == BNBType.files && !kIsWeb && Platform.isAndroid) {
       page = const FilesView();
-      // } else if (bnbType == BNBType.calender && Platform.isIOS) {
-      // page = ;
+    } else if ((bnbType == BNBType.calender || bnbType == BNBType.files) &&
+        !kIsWeb &&
+        Platform.isIOS) {
+      page = bodyBg(
+          body: const Center(
+        child:
+            Text('This feature will be available soon! ', style: CommonStyles.mainTitle),
+      ));
     } else {
-      page = defaultBody();
+      const privacyUrl =
+          'https://docs.google.com/document/d/1aqZtQoF07VW1PtumKUw5sObgpE6d25hmM5HoPB1BojI/edit';
+      page = bodyBg(
+        body: Column(
+          children: [
+            Text(bnbType.name.toCapitalized(), style: CommonStyles.titleStyle),
+            const SizedBox(height: 40),
+            const _ActionCardList(),
+            TextButton(
+              onPressed: () =>
+                  launchUrl(Uri.parse(privacyUrl), mode: LaunchMode.externalApplication),
+              child: const Text('Privacy Policy', style: CommonStyles.clickable),
+            ),
+          ],
+        ),
+      );
     }
     return page;
   }
 
-  Widget defaultBody() {
-    const privacyUrl =
-        'https://docs.google.com/document/d/1aqZtQoF07VW1PtumKUw5sObgpE6d25hmM5HoPB1BojI/edit';
+  Widget bodyBg({Widget? body}) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        vertical: 30,
-        horizontal: 20,
-      ),
-      decoration: const BoxDecoration(
-        color: Color(0xfff6f6f6),
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      child: Column(
-        children: [
-          Text(bnbType.name.toCapitalized(), style: CommonStyles.titleStyle),
-          const SizedBox(height: 40),
-          const _ActionCardList(),
-          TextButton(
-            onPressed: () =>
-                launchUrl(Uri.parse(privacyUrl), mode: LaunchMode.externalApplication),
-            child: const Text('Privacy Policy', style: CommonStyles.clickable),
-          ),
-        ],
-      ),
-    );
+        padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+        decoration: const BoxDecoration(
+            color: Color(0xfff6f6f6),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+        child: body);
   }
 }
 
@@ -80,7 +86,8 @@ class _ActionCardList extends ConsumerWidget {
     final providerMainWatch = ref.watch(providerMain);
 
     String title = providerMainRead.bnbList[providerMainWatch.currentTabIndex].name;
-    List<CardModel> cardModelList = providerMainRead.getCardModelList(title);
+    List<CardModel> cardModelList =
+        providerMainRead.getCardModelList(title, isContacts: title == 'contacts');
 
     return Expanded(
       child: ListView.separated(
@@ -107,9 +114,15 @@ class _CardItemState extends State<_CardItem> {
   Widget build(BuildContext context) {
     final listMainModelItem = widget.listMainModelItem;
     final tabType = widget.mainTitle;
-    final title = listMainModelItem.title;
+    var title = listMainModelItem.title;
     bool isEnable = true;
     final mainScope = providerMainScope(context);
+
+    if (tabType == 'contacts' && !kIsWeb && Platform.isIOS) {
+      if (title == 'Backup') title = 'Sync';
+      if (title == 'Restore') title = 'Transfer';
+      if (title == 'View') title = 'Copy';
+    }
 
     // final providerMainWatch = ref.watch(providerMain);
     return Card(
@@ -118,19 +131,32 @@ class _CardItemState extends State<_CardItem> {
         child: ListTile(
           onTap: isEnable
               ? () async {
-                  if (title == 'Backup') {
+                  if (title == 'Backup' || title == 'Sync') {
                     await CardActions.onBackup(context, tabType);
 
                     setState(() {});
                   }
-                  if (title == 'Restore') CardActions.onRestore(context, tabType);
+                  if (title == 'Restore') {
+                    CardActions.onRestore(context, tabType);
+                  }
 
-                  if (title == 'View') {
+                  if (title == 'Transfer') {
+                    await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              _buildViewContacts(context, transferMode: true),
+                        ));
+                  }
+
+                  if (title == 'View' || title == 'Copy') {
+                    // This dialog show TextField that request "Sync Code" to View data
                     await showWebDialogIfNeeded(tabType);
 
                     // Default
                     Widget page = ViewBackupPage(
-                        title: '${tabType.toCapitalized()} Backup',
+                        title: '${tabType.toCapitalized()} '
+                            '${!kIsWeb && Platform.isIOS ? 'Copy' : 'Backup'}',
                         body: const Column(children: [Row()]));
 
                     if (tabType == 'Messages') {
@@ -174,6 +200,7 @@ class _CardItemState extends State<_CardItem> {
                 context.listenUniProvider.calendars.isNotEmpty) {
               txt = 'View ${context.uniProvider.calendars.length} Calenders';
             }
+
             return Text(txt, style: const TextStyle(fontWeight: FontWeight.bold));
           }),
           subtitle: Padding(
@@ -259,36 +286,117 @@ class _CardItemState extends State<_CardItem> {
     }
   }
 
-  Widget _buildViewContacts(BuildContext context) {
+  Widget _buildViewContacts(BuildContext context, {bool transferMode = false}) {
     final listMainModelItem = widget.listMainModelItem;
     final mainTitle = widget.mainTitle.toCapitalized();
+    var appBarTitle = '';
     final mainProvider = providerMainScope(context);
     var contacts = providerMainScope(context).contacts;
+    List<bool> checkedItems =
+        List.generate(providerMainScope(context).contacts.length, (i) => false);
+    List<String> sContacts = [];
 
-    return ViewBackupPage(
-      title: '$mainTitle Backup',
-      body: ListView.builder(
-        itemCount: contacts.length,
-        itemBuilder: (context, i) {
-          final contact = contacts[i];
-          if ((contact.phones ?? []).isEmpty || contact.givenName == null) {
-            return const Offstage();
-          }
-          return Column(
-            children: [
-              Card(
-                child: ListTile(
-                  leading: const CircleAvatar(child: Icon(Icons.contacts)),
-                  title: Text('${contact.givenName}'),
-                  subtitle: Text('${contact.phones?.first.value}'),
+    if (!kIsWeb && Platform.isAndroid) appBarTitle = '$mainTitle Backup';
+    if (!kIsWeb && Platform.isIOS) appBarTitle = 'Sync $mainTitle';
+    if (transferMode) appBarTitle = 'Transfer $mainTitle';
+
+    return StatefulBuilder(builder: (context, stfState) {
+      return ViewBackupPage(
+        title: appBarTitle,
+        appBarButton: !kIsWeb && Platform.isIOS
+            ? transferMode
+                ? InkWell(
+                    onTap: () async {
+                      final data = '$sContacts'
+                          .replaceAll('[', '')
+                          .replaceAll(']', '')
+                          .replaceAll(',', '');
+
+                      final Email email = Email(
+                        recipients: ['placeholder@gmail.com'],
+                        body: data,
+                        subject: '${sContacts.length} contacts info is ready',
+                        isHTML: false,
+                      );
+
+                      await FlutterEmailSender.send(email);
+
+                      await EasyLoading.showSuccess(
+                          '${sContacts.length} Contacts sent at mail',
+                          dismissOnTap: false,
+                          duration: const Duration(milliseconds: 2000),
+                          maskType: EasyLoadingMaskType.custom);
+
+                      Navigator.pop(context);
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 20.0),
+                      child: Icon(
+                        Icons.check,
+                        color: Colors.green[300],
+                      ),
+                    ),
+                  )
+                : InkWell(
+                    onTap: () async {
+                      Clipboard.setData(ClipboardData(
+                          text: '$sContacts'
+                              .replaceAll('[', '')
+                              .replaceAll(']', '')
+                              .replaceAll(',', '')));
+                      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$passkey Code copied to clipboard')),);
+                      await EasyLoading.showSuccess(
+                          '${sContacts.length} Contacts copied to clipboard',
+                          dismissOnTap: false,
+                          duration: const Duration(milliseconds: 2000),
+                          maskType: EasyLoadingMaskType.custom);
+
+                      Navigator.pop(context);
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 20.0),
+                      child: Icon(
+                        Icons.check,
+                        color: Colors.green[300],
+                      ),
+                    ),
+                  )
+            : null,
+        body: ListView.builder(
+          itemCount: contacts.length,
+          itemBuilder: (context, i) {
+            final contact = contacts[i];
+            if ((contact.phones ?? []).isEmpty || contact.givenName == null) {
+              return const Offstage();
+            }
+            return Column(
+              children: [
+                Card(
+                  child: ListTile(
+                    trailing: !kIsWeb && Platform.isIOS
+                        ? Checkbox(
+                            value: checkedItems[i],
+                            onChanged: (bool? value) {
+                              print('value ${value}');
+                              checkedItems[i] = value ?? false;
+                              sContacts.add(
+                                  '${contact.givenName} : ${contact.phones?.first.value}\n');
+                              stfState(() {});
+                            },
+                          )
+                        : null,
+                    leading: const CircleAvatar(child: Icon(Icons.contacts)),
+                    title: Text('${contact.givenName}'),
+                    subtitle: Text('${contact.phones?.first.value}'),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 15),
-            ],
-          );
-        },
-      ),
-    );
+                const SizedBox(height: 15),
+              ],
+            );
+          },
+        ),
+      );
+    });
   }
 
   Widget _buildViewCalenders(BuildContext context) {

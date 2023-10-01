@@ -99,7 +99,8 @@ class Init {
     EasyLoading.show(
         dismissOnTap: false,
         status: '${type ?? 'Auto'}'
-            ' Backup running...',
+            '${!kIsWeb && Platform.isIOS ? ' Sync' : ' Backup'}'
+            ' running...',
         maskType: EasyLoadingMaskType.custom);
 
     await Future.delayed(const Duration(milliseconds: 2250));

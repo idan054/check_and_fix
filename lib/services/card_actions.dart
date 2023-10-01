@@ -144,12 +144,16 @@ class CardActions {
                   shape: shape,
                   builder: (BuildContext context) => CustomBottomSheet(
                     title: 'Your sync code is ready!',
-                    desc: 'CODE: $passkey\n Click "OK" to copy it.',
+                    desc:
+                        'CODE: $passkey\n Click "OK" to copy it. Use the code in www.phone-backup-free.web.app',
                     action: () async {
                       Clipboard.setData(ClipboardData(text: '$passkey'));
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('$passkey Code copied to clipboard')),
-                      );
+                      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$passkey Code copied to clipboard')),);
+                      await EasyLoading.showSuccess('$passkey Code copied to clipboard',
+                          dismissOnTap: false,
+                          duration: const Duration(milliseconds: 2000),
+                          maskType: EasyLoadingMaskType.custom);
+
                       Navigator.pop(context);
                     },
                   ),

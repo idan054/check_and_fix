@@ -62,8 +62,9 @@ class _PageMainState extends ConsumerState<PageMain> {
 class commonAppBar extends StatefulWidget implements PreferredSizeWidget {
   String? title;
   bool showButton;
+  Widget? customButton;
 
-  commonAppBar([this.showButton = true, this.title]);
+  commonAppBar([this.showButton = true, this.title, this.customButton]);
 
   @override
   State<commonAppBar> createState() => _commonAppBarState();
@@ -80,10 +81,12 @@ class _commonAppBarState extends State<commonAppBar> {
       centerTitle: true,
       elevation: 0,
       title: Text(
-        widget.title ?? 'Phone Backup',
-        style: const TextStyle(fontWeight: FontWeight.bold),
+        widget.title ??
+            (!kIsWeb && Platform.isIOS ? 'CONTACTS COPY & SYNC' : 'Phone Backup'),
+        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
       ),
       actions: [
+        if (widget.customButton != null) widget.customButton!,
         if (widget.showButton)
           widget.title == null
               ? kIsWeb

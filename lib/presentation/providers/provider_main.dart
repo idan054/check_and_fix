@@ -43,28 +43,36 @@ class ProviderMain extends StateNotifier<MainModel> {
   List<SmsModel> smsLogs = [];
   bool isShowMessagesBackup = true;
 
-  List<CardModel> getCardModelList(String title) {
+  List<CardModel> getCardModelList(String title, {bool isContacts = false}) {
     List<CardModel> listMainModelList = [];
 
     if (!kIsWeb) {
       listMainModelList.add(CardModel(
         // icon: Icons.person,
-        icon: Icons.backup,
+        icon: isContacts && !kIsWeb && Platform.isIOS
+            ? Icons.phonelink_rounded
+            : Icons.backup,
         title: 'Backup',
-        subtitle: 'Take all $title backup in your directory.',
+        subtitle: 'Take all $title in your directory.',
       ));
 
       listMainModelList.add(CardModel(
-        icon: Icons.restore,
+        icon: isContacts && !kIsWeb && Platform.isIOS
+            ? Icons.forward_to_inbox_rounded
+            : Icons.restore,
         title: 'Restore',
-        subtitle: 'Restore your $title backup from directory files.',
+        subtitle: isContacts && !kIsWeb && Platform.isIOS
+            ? 'Transfer your contacts info via mail'
+            : 'Restore your $title backup from directory files.',
       ));
     }
 
     listMainModelList.add(CardModel(
-      icon: Icons.folder,
+      icon: isContacts && !kIsWeb && Platform.isIOS ? Icons.copy_rounded : Icons.folder,
       title: 'View',
-      subtitle: 'View your saved backup files',
+      subtitle: isContacts && !kIsWeb && Platform.isIOS
+          ? 'Select contacts to copy to clipboard'
+          : 'View your saved backup files',
     ));
 
     return listMainModelList;

@@ -35,7 +35,7 @@ class _PageMainState extends ConsumerState<SettingsPage> {
               body: ListView(
                 children: <Widget>[
                   ListTile(
-                    title: const Text('Automatic Backup mode'),
+                    title: const Text('Automatic Sync mode'),
                     trailing: Switch.adaptive(
                       value: switch1Value,
                       onChanged: (newValue) {
@@ -45,7 +45,7 @@ class _PageMainState extends ConsumerState<SettingsPage> {
                     ),
                   ),
                   ListTile(
-                    title: const Text('Backup when app opened'),
+                    title: const Text('Start sync when app opened'),
                     trailing: Switch.adaptive(
                       value: switch2Value,
                       onChanged: (newValue) {
@@ -55,7 +55,7 @@ class _PageMainState extends ConsumerState<SettingsPage> {
                     ),
                   ),
                   ListTile(
-                    title: const Text('Remind a weekly backup'),
+                    title: const Text('Remind a weekly sync'),
                     trailing: Switch.adaptive(
                       value: switch3Value,
                       onChanged: (newValue) {

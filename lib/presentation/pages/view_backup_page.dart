@@ -10,8 +10,9 @@ import '../providers/provider_main.dart';
 class ViewBackupPage extends ConsumerStatefulWidget {
   final Widget? body;
   final String? title;
+  final Widget? appBarButton;
 
-  const ViewBackupPage({this.title, this.body, super.key});
+  const ViewBackupPage({this.appBarButton, this.title, this.body, super.key});
 
   @override
   ConsumerState<ViewBackupPage> createState() => _PageMainState();
@@ -25,7 +26,7 @@ class _PageMainState extends ConsumerState<ViewBackupPage> {
 
     return Scaffold(
       backgroundColor: ConstantsColors.colorIndigoAccent,
-      appBar: commonAppBar(false, widget.title),
+      appBar: commonAppBar(false, widget.title, widget.appBarButton),
       body: Container(
           padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
           decoration: const BoxDecoration(
