@@ -105,7 +105,9 @@ class Init {
 
     await Future.delayed(const Duration(milliseconds: 2250));
 
-    await EasyLoading.showSuccess('Backup completed!',
+    await EasyLoading.showSuccess(
+        '${(!kIsWeb && Platform.isIOS ? 'Sync ' : 'Backup ')}'
+        'completed!',
         dismissOnTap: false,
         duration: const Duration(milliseconds: 1250),
         maskType: EasyLoadingMaskType.custom);

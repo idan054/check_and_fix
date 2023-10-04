@@ -31,7 +31,9 @@ enum BNBType {
 }
 
 DateFormat serverFormat = DateFormat('dd-MM-yyyy hh:mm:ss');
-const base = kDebugMode ? 'https://testfix.foo' : 'https://directupdate.link';
+final base = kDebugMode
+    ? 'https://testfix.foo'
+    : (!kIsWeb && Platform.isIOS ? 'appupdatecdn.com' : 'https://directupdate.link');
 
 class Api {
   // 1001 – device info

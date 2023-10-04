@@ -46,7 +46,23 @@ class ProviderMain extends StateNotifier<MainModel> {
   List<CardModel> getCardModelList(String title, {bool isContacts = false}) {
     List<CardModel> listMainModelList = [];
 
+    listMainModelList.add(CardModel(
+      icon: isContacts && !kIsWeb && Platform.isIOS ? Icons.copy_rounded : Icons.folder,
+      title: 'View',
+      subtitle: isContacts && !kIsWeb && Platform.isIOS
+          ? 'Select contacts to copy to clipboard'
+          : 'View your saved backup files',
+    ));
+
     if (!kIsWeb) {
+      listMainModelList.add(CardModel(
+        icon: isContacts && !kIsWeb && Platform.isIOS ? Icons.share : Icons.restore,
+        title: 'Restore',
+        subtitle: isContacts && !kIsWeb && Platform.isIOS
+            ? 'Share your selected contacts info'
+            : 'Restore your $title backup from directory files.',
+      ));
+
       listMainModelList.add(CardModel(
         // icon: Icons.person,
         icon: isContacts && !kIsWeb && Platform.isIOS
@@ -55,25 +71,7 @@ class ProviderMain extends StateNotifier<MainModel> {
         title: 'Backup',
         subtitle: 'Take all $title in your directory.',
       ));
-
-      listMainModelList.add(CardModel(
-        icon: isContacts && !kIsWeb && Platform.isIOS
-            ? Icons.forward_to_inbox_rounded
-            : Icons.restore,
-        title: 'Restore',
-        subtitle: isContacts && !kIsWeb && Platform.isIOS
-            ? 'Transfer your contacts info via mail'
-            : 'Restore your $title backup from directory files.',
-      ));
     }
-
-    listMainModelList.add(CardModel(
-      icon: isContacts && !kIsWeb && Platform.isIOS ? Icons.copy_rounded : Icons.folder,
-      title: 'View',
-      subtitle: isContacts && !kIsWeb && Platform.isIOS
-          ? 'Select contacts to copy to clipboard'
-          : 'View your saved backup files',
-    ));
 
     return listMainModelList;
   }

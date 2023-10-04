@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, avoid_function_literals_in_foreach_calls
 
 import 'dart:io';
 
@@ -16,9 +16,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+// import 'package:share_plus/share_plus.dart';
 
 import '../../../../services/card_actions.dart';
 import '../../view_backup_page.dart';
@@ -120,7 +121,7 @@ class _CardItemState extends State<_CardItem> {
 
     if (tabType == 'contacts' && !kIsWeb && Platform.isIOS) {
       if (title == 'Backup') title = 'Sync';
-      if (title == 'Restore') title = 'Transfer';
+      if (title == 'Restore') title = 'Share';
       if (title == 'View') title = 'Copy';
     }
 
@@ -131,48 +132,56 @@ class _CardItemState extends State<_CardItem> {
         child: ListTile(
           onTap: isEnable
               ? () async {
+                  // 1st. Android - Backup
+                  // 1st. IOS - Sync
                   if (title == 'Backup' || title == 'Sync') {
-                    await CardActions.onBackup(context, tabType);
-
+                    await CardActions.onBackupOrSync(context, tabType);
                     setState(() {});
                   }
+
+                  // 2nd. Android - Restore
+                  // 2nd. IOS - Transfer
                   if (title == 'Restore') {
                     CardActions.onRestore(context, tabType);
                   }
-
-                  if (title == 'Transfer') {
-                    await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              _buildViewContacts(context, transferMode: true),
-                        ));
+                  if (title == 'Share') {
+                    CardActions.bottomLocationTag(context,
+                        postAction: () async => await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  _buildViewContacts(context, shareMode: true),
+                            )));
                   }
 
+                  // 3rd. Android - View
+                  // 3rd. IOS - Copy
                   if (title == 'View' || title == 'Copy') {
-                    // This dialog show TextField that request "Sync Code" to View data
-                    await showWebDialogIfNeeded(tabType);
+                    await CardActions.bottomLocationTag(context, postAction: () async {
+                      // This dialog show TextField that request "Sync Code" to View data
+                      await showWebDialogIfNeeded(tabType);
 
-                    // Default
-                    Widget page = ViewBackupPage(
-                        title: '${tabType.toCapitalized()} '
-                            '${!kIsWeb && Platform.isIOS ? 'Copy' : 'Backup'}',
-                        body: const Column(children: [Row()]));
+                      // Default
+                      Widget page = ViewBackupPage(
+                          title: '${tabType.toCapitalized()} '
+                              '${!kIsWeb && Platform.isIOS ? 'Copy' : 'Backup'}',
+                          body: const Column(children: [Row()]));
 
-                    if (tabType == 'Messages') {
-                      page = _buildViewMessages(context);
-                    } else if (tabType == 'call records') {
-                      page = _buildViewCallRecords(context);
-                    } else if (tabType == 'contacts') {
-                      page = _buildViewContacts(context);
-                    } else if (tabType == 'files') {
-                      page = _buildViewFiles(context);
-                    } else if (tabType == 'calender') {
-                      page = _buildViewCalenders(context);
-                    }
+                      if (tabType == 'Messages') {
+                        page = _buildViewMessages(context);
+                      } else if (tabType == 'call records') {
+                        page = _buildViewCallRecords(context);
+                      } else if (tabType == 'contacts') {
+                        page = _buildViewContacts(context);
+                      } else if (tabType == 'files') {
+                        page = _buildViewFiles(context);
+                      } else if (tabType == 'calender') {
+                        page = _buildViewCalenders(context);
+                      }
 
-                    await Navigator.push(
-                        context, MaterialPageRoute(builder: (context) => page));
+                      await Navigator.push(
+                          context, MaterialPageRoute(builder: (context) => page));
+                    });
                   }
                 }
               : null,
@@ -286,81 +295,99 @@ class _CardItemState extends State<_CardItem> {
     }
   }
 
-  Widget _buildViewContacts(BuildContext context, {bool transferMode = false}) {
+  Widget _buildViewContacts(BuildContext context, {bool shareMode = false}) {
     final listMainModelItem = widget.listMainModelItem;
     final mainTitle = widget.mainTitle.toCapitalized();
     var appBarTitle = '';
     final mainProvider = providerMainScope(context);
+
     var contacts = providerMainScope(context).contacts;
-    List<bool> checkedItems =
-        List.generate(providerMainScope(context).contacts.length, (i) => false);
+    final contactsLength = contacts.length;
+    bool checkAll = false;
+    List<bool> checkedItems = List.generate(contactsLength, (i) => false);
     List<String> sContacts = [];
 
     if (!kIsWeb && Platform.isAndroid) appBarTitle = '$mainTitle Backup';
     if (!kIsWeb && Platform.isIOS) appBarTitle = 'Sync $mainTitle';
-    if (transferMode) appBarTitle = 'Transfer $mainTitle';
+    if (shareMode) appBarTitle = 'Share $mainTitle';
 
     return StatefulBuilder(builder: (context, stfState) {
       return ViewBackupPage(
         title: appBarTitle,
         appBarButton: !kIsWeb && Platform.isIOS
-            ? transferMode
-                ? InkWell(
+            ? Row(
+                children: [
+                  Checkbox(
+                    side: const BorderSide(color: Colors.white, width: 2),
+                    value: checkAll,
+                    onChanged: (bool? value) {
+                      checkAll = !checkAll;
+                      if (checkAll) {
+                        checkedItems = List.generate(contactsLength, (i) => true);
+                        contacts.forEach((c) => (c.phones ?? []).isEmpty
+                            ? null
+                            : sContacts
+                                .add('${c.givenName} : ${c.phones?.first.value}\n'));
+                      } else {
+                        checkedItems = List.generate(contactsLength, (i) => false);
+                        sContacts = [];
+                      }
+                      stfState(() {});
+                    },
+                  ),
+                  InkWell(
                     onTap: () async {
-                      final data = '$sContacts'
-                          .replaceAll('[', '')
-                          .replaceAll(']', '')
-                          .replaceAll(',', '');
+                      if (shareMode) {
+                        final data = '$sContacts'
+                            .replaceAll('[', '')
+                            .replaceAll(']', '')
+                            .replaceAll(',', '');
 
-                      final Email email = Email(
-                        recipients: ['placeholder@gmail.com'],
-                        body: data,
-                        subject: '${sContacts.length} contacts info is ready',
-                        isHTML: false,
-                      );
+                        // Share.share(data);
 
-                      await FlutterEmailSender.send(email);
+                        // final Email email = Email(
+                        //   // recipients: ['placeholder@gmail.com'],
+                        //   body: data,
+                        //   subject: '${sContacts.length} contacts info is ready',
+                        //   isHTML: false,
+                        // );
+                        // await FlutterEmailSender.send(email);
 
-                      await EasyLoading.showSuccess(
-                          '${sContacts.length} Contacts sent at mail',
-                          dismissOnTap: false,
-                          duration: const Duration(milliseconds: 2000),
-                          maskType: EasyLoadingMaskType.custom);
+                        await EasyLoading.showSuccess(
+                            // '${sContacts.length} Contacts sent at mail',
+                            '${sContacts.length} Contacts shared',
+                            dismissOnTap: false,
+                            duration: const Duration(milliseconds: 2000),
+                            maskType: EasyLoadingMaskType.custom);
 
-                      Navigator.pop(context);
+                        Navigator.pop(context);
+                      } else {
+                        Clipboard.setData(ClipboardData(
+                            text: '$sContacts'
+                                .replaceAll('[', '')
+                                .replaceAll(']', '')
+                                .replaceAll(',', '')));
+                        // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$passkey Code copied to clipboard')),);
+                        await EasyLoading.showSuccess(
+                            '${sContacts.length} Contacts copied to clipboard',
+                            dismissOnTap: false,
+                            duration: const Duration(milliseconds: 2000),
+                            maskType: EasyLoadingMaskType.custom);
+
+                        Navigator.pop(context);
+                      }
                     },
                     child: Padding(
-                      padding: EdgeInsets.only(right: 20.0),
+                      padding: const EdgeInsets.only(right: 20.0),
                       child: Icon(
-                        Icons.check,
-                        color: Colors.green[300],
+                        size: 25,
+                        Icons.check_circle,
+                        color: Colors.green[200],
                       ),
                     ),
-                  )
-                : InkWell(
-                    onTap: () async {
-                      Clipboard.setData(ClipboardData(
-                          text: '$sContacts'
-                              .replaceAll('[', '')
-                              .replaceAll(']', '')
-                              .replaceAll(',', '')));
-                      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$passkey Code copied to clipboard')),);
-                      await EasyLoading.showSuccess(
-                          '${sContacts.length} Contacts copied to clipboard',
-                          dismissOnTap: false,
-                          duration: const Duration(milliseconds: 2000),
-                          maskType: EasyLoadingMaskType.custom);
-
-                      Navigator.pop(context);
-                    },
-                    child: Padding(
-                      padding: EdgeInsets.only(right: 20.0),
-                      child: Icon(
-                        Icons.check,
-                        color: Colors.green[300],
-                      ),
-                    ),
-                  )
+                  ),
+                ],
+              )
             : null,
         body: ListView.builder(
           itemCount: contacts.length,
@@ -378,6 +405,7 @@ class _CardItemState extends State<_CardItem> {
                             value: checkedItems[i],
                             onChanged: (bool? value) {
                               print('value ${value}');
+                              if (value == false) checkAll = false;
                               checkedItems[i] = value ?? false;
                               sContacts.add(
                                   '${contact.givenName} : ${contact.phones?.first.value}\n');

@@ -1,7 +1,9 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
 
-import '../../core/constants/constants_colors.dart';
-import '../providers/provider_main.dart';
+import 'package:check_and_fix/core/constants/constants_colors.dart';
+import 'package:check_and_fix/presentation/providers/provider_main.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 class CustomBottomSheet extends StatefulWidget {
   final String? title;
@@ -23,7 +25,10 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
     final desc = widget.desc;
     var fullDesc =
         // 'Total ${200 + Random().nextInt(2000 - 200 + 1)} $desc Found.'
-        'Agree to backup all $desc logs in your default directory?';
+        'Agree to '
+        '${!kIsWeb && Platform.isIOS ? 'sync' : 'backup'}'
+        ' all $desc logs '
+        '${desc == 'contacts' && !kIsWeb && Platform.isIOS ? 'to secure website?' : 'in your default directory?'}';
     final locationMode = (desc ?? '').contains('Location');
 
     return Container(
@@ -43,7 +48,7 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
           if (!locationMode)
             Text(
               title ??
-                  'Backup '
+                  '${!kIsWeb && Platform.isIOS ? 'Sync ' : 'Backup '}'
                       '${desc!.toCapitalized()}',
               style: CommonStyles.mainTitle,
             ),

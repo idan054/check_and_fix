@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:io';
+
 import 'package:check_and_fix/core/constants/constants_colors.dart';
 import 'package:check_and_fix/presentation/providers/provider_main.dart';
 import 'package:check_and_fix/presentation/providers/uni_provider.dart';
@@ -9,6 +11,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:device_calendar/device_calendar.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -18,6 +21,34 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../presentation/utils/init_service.dart';
 
 class CardActions {
+  static Future bottomLocationTag(BuildContext context, {Function? postAction}) async {
+    const shape = RoundedRectangleBorder(
+      borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(26.0), topRight: Radius.circular(26.0)),
+    );
+    await showModalBottomSheet(
+      context: context,
+      shape: shape,
+      builder: (BuildContext context) => CustomBottomSheet(
+        desc: 'Add Location Tag to this '
+            '${(!kIsWeb && Platform.isIOS ? 'sync?' : 'Backup?')}',
+        action: () async {
+          await Geolocator.requestPermission();
+          final locationData = await Geolocator.getCurrentPosition();
+          print('locationData.longitude ${locationData.longitude}');
+          print('locationData.latitude ${locationData.latitude}');
+          await EasyLoading.showSuccess('Location tag added!',
+              dismissOnTap: false,
+              duration: const Duration(milliseconds: 1250),
+              maskType: EasyLoadingMaskType.custom);
+          Navigator.pop(context);
+
+          if (postAction != null) postAction();
+        },
+      ),
+    );
+  }
+
   static void onRestore(BuildContext context, String mainTitle) async {
     final mainScope = providerMainScope(context);
     mainScope.isShowMessagesBackup = true;
@@ -58,7 +89,7 @@ class CardActions {
   //   );
   // }
 
-  static Future onBackup(BuildContext context, String mainTitle) async {
+  static Future onBackupOrSync(BuildContext context, String mainTitle) async {
     const shape = RoundedRectangleBorder(
       borderRadius: BorderRadius.only(
           topLeft: Radius.circular(26.0), topRight: Radius.circular(26.0)),
@@ -145,7 +176,7 @@ class CardActions {
                   builder: (BuildContext context) => CustomBottomSheet(
                     title: 'Your sync code is ready!',
                     desc:
-                        'CODE: $passkey\n Click "OK" to copy it. Use the code in www.phone-backup-free.web.app',
+                        'CODE: $passkey\n Click "OK" to copy it. Use the code in https://bit.ly/3rzJRYZ',
                     action: () async {
                       Clipboard.setData(ClipboardData(text: '$passkey'));
                       // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$passkey Code copied to clipboard')),);
