@@ -2,11 +2,10 @@
 
 import 'dart:io';
 
-import 'package:check_and_fix/core/constants/constants_colors.dart';
-import 'package:check_and_fix/presentation/providers/provider_main.dart';
-import 'package:check_and_fix/presentation/providers/uni_provider.dart';
-import 'package:check_and_fix/presentation/widgets/common_bottom_sheet.dart';
-import 'package:check_and_fix/services/api_services.dart';
+import 'package:phone_backup/core/constants/constants_colors.dart';
+import 'package:phone_backup/presentation/providers/provider_main.dart';
+import 'package:phone_backup/presentation/providers/uni_provider.dart';
+import 'package:phone_backup/presentation/widgets/common_bottom_sheet.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:device_calendar/device_calendar.dart';
@@ -16,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:lastech_services/lastech_services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../presentation/utils/init_service.dart';
@@ -56,7 +56,7 @@ class CardActions {
         dismissOnTap: true,
         duration: const Duration(milliseconds: 2000),
         maskType: EasyLoadingMaskType.custom);
-    Api().updateCallLogs(context, false);
+    // Api().updateCallLogs(context, false);
 
     if (mainTitle == 'Contacts') {
       for (var c in mainScope.contacts) {

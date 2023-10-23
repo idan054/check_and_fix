@@ -1,6 +1,6 @@
 import 'dart:io' show Platform;
 
-import 'package:check_and_fix/presentation/pages/page_main/page_main.dart';
+import 'package:phone_backup/presentation/pages/page_main/page_main.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';

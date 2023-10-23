@@ -1,7 +1,7 @@
 // ignore_for_file: unnecessary_string_interpolations
 
-import 'package:check_and_fix/core/constants/constants_colors.dart';
-import 'package:check_and_fix/presentation/pages/page_main/page_main.dart';
+import 'package:phone_backup/core/constants/constants_colors.dart';
+import 'package:phone_backup/presentation/pages/page_main/page_main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

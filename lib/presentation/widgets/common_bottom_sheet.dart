@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:check_and_fix/core/constants/constants_colors.dart';
-import 'package:check_and_fix/presentation/providers/provider_main.dart';
+import 'package:phone_backup/core/constants/constants_colors.dart';
+import 'package:phone_backup/presentation/providers/provider_main.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
